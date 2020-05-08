@@ -166,6 +166,11 @@ function createCharts(peopleData) {
     barChart03.margins().left = 50;
     barChart04.margins().left = 50;
     barChart05.margins().left = 50;
+    timeXAxis(barChart03)
+    timeXAxis(barChart04)
+    timeXAxis(barChart05)
+
+
   dc.renderAll();
 };
 
@@ -217,6 +222,14 @@ function addDatesToChartOrig(chart){
               .attr('startOffset', '0%')
               .text(covidLabel);
 //}
+}
+
+function timeXAxis(chart){
+  chart.xAxis().tickValues([1584921600000,1585526400000,1586131200000, 1586736000000, 1587340800000,1587945600000]);
+  chart.xAxis().tickFormat(function(v) {
+    let date = new Date(v);
+    return date.toDateString().split(" 2020").join(" ").trim();
+  })
 }
 
 function addDatesToChart(chart) {
