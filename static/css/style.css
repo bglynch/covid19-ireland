@@ -1,0 +1,7 @@
+main{
+    margin-top: 56px;
+}
+
+#chart01 g.row text{
+    fill: #000;
+}

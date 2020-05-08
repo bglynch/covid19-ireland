@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- css -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="static/libraries/dc4/dc.css" />
+  <link rel="stylesheet" href="static/css/style.css">
+
+  <title>DC.js Project</title>
+</head>
+
+<body>
+  <nav class="navbar fixed-top navbar-dark bg-dark">
+    <div class="container-fluid">
+      <div class="flexer navbar-header">
+        <!-- <img height="50" src="static/aib.png" /> -->
+        <a class="navbar-brand" href="#">My Project</a>
+      </div>
+    </div>
+  </nav>
+  <main class="container">
+    <section class="row">
+      <div class="col-8 text-center mt-5">
+          <p class="section-paragraph">Cases on a County Level</p>
+          <div id="chart01" class="custom-chart"></div>
+        </div>
+        <div class="col-4 mt-5 text-center">
+          <p class="section-paragraph">Cases on a Province Level</p>
+          <div id="chart02" class="custom-chart"></div>
+        </div>
+        <div class="col-12 mt-5 text-center">
+          <p class="section-paragraph">Cases announced per Day</p>
+          <div id="chart03" class="custom-chart"></div>
+        </div>
+        <div class="col-12 mt-5 text-center">
+          <p class="section-paragraph">Cases announced per Day: 3 Day Average</p>
+          <div id="chart04" class="custom-chart"></div>
+        </div>
+        <div class="col-12 mt-5 text-center">
+          <p class="section-paragraph">Cases announced per Day: 7 Day Average</p>
+        <div id="chart05" class="custom-chart"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ** Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <!-- ** Charting libraries -->
+  <script src="static/libraries/d3v5/d3.v5.min.js"></script>
+  <script src="static/libraries/crossfilter/crossfilter.min.js"></script>
+  <script src="static/libraries/dc4/dc.js"></script>
+  <script src="static/js/graph.js"></script>
+</body>
+
+</html>
