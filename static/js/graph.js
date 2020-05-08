@@ -7,21 +7,27 @@ d3.csv('data/COVID19 - County.csv')
     return data;
   })
   .then(function (data) {
-    createCharts(data);
+    createCountyCharts(data);
   })
   .catch(function (error) {
     console.log(error);
   });
 
+  //  https://gist.github.com/mbostock/44466fb0ff73bd630172020fc66df1dc
   fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv', {mode: 'cors'})
   .then(function(response) {
-    return response.text();
+    return response.ok ? response.text() : Promise.reject(response.status);
   })
   .then(function(text) {
-    console.log('Request successful', text);
+    return d3.csvParse(text);
+  })
+  .then(function (data) {
+    data.forEach(d => cleanDeathsData(d));
+    console.log(data)
+    return data
   })
   .catch(function(error) {
-    log('Request failed', error)
+    console.log('Request failed', error)
   });
 
 function modifyData(d) {
@@ -32,9 +38,24 @@ function modifyData(d) {
   //d.ageGroup = roundDown(d.age, 10) + "'s'"
   return d;
 }
+const dateFormat = d3.timeParse("%Y/%m/%d");
+const formatTime = d3.timeFormat("%a %d %b");
+const unixTime = d3.timeFormat("%Q");
 
+function cleanDeathsData(d){
+  d.Cases3DayAvg = +d.Cases3DayAvg;
+  d.Cases7DayAvg = +d.Cases7DayAvg;
+  d.ConfirmedCovidCases = +d.ConfirmedCovidCases;
+  d.ConfirmedCovidDeaths = +d.ConfirmedCovidDeaths;
+  d.ConfirmedCovidRecovered = +d.ConfirmedCovidRecovered;
+  d.Deaths3Day = +d.Deaths3Day;
+  d.Deaths7Day = +d.Deaths7Day;
+  d.dd = dateFormat(d.StatisticsProfileDate.split(" ")[0]);
+  d.unixTime = unixTime(d.dd);
+  d.formattedDate = formatTime(d.dd);;
+}
 
-function createCharts(peopleData) {
+function createCountyCharts(peopleData) {
   dc.config.defaultColors(d3.schemeDark2);
 
   // ==  create the crossfilter object
@@ -212,7 +233,6 @@ function addDatesToChart(chart) {
       .text(covidLabel);
   }
 }
-
 
 let roundDown = function (num, precision) {
   num = parseFloat(num);
