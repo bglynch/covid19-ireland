@@ -13,16 +13,16 @@ d3.csv('data/COVID19 - County.csv')
     console.log(error);
   });
 
-  //fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=786105712&single=true&output=csv', {mode: 'cors'})
-  //.then(function(response) {
-  //  return response.text();
-  //})
-  //.then(function(text) {
-  //  console.log('Request successful', text);
-  //})
-  //.catch(function(error) {
-  //  log('Request failed', error)
-  //});
+  fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv', {mode: 'cors'})
+  .then(function(response) {
+    return response.text();
+  })
+  .then(function(text) {
+    console.log('Request successful', text);
+  })
+  .catch(function(error) {
+    log('Request failed', error)
+  });
 
 function modifyData(d) {
   d['NewCases'] = +d["NewCases"]
@@ -174,56 +174,6 @@ function createCharts(peopleData) {
   dc.renderAll();
 };
 
-function addDatesToChartOrig(chart){
-  let covidDates = [
-    //{date:1583971200000, label:"Delay Phase"},
-    //{date:1585267200000, label:"Stay Home Phase"},
-    {date:1583971200000, label:"Ease Restrictions"},
-    {date:1585267200000, label:"27th March: Lockdown Starts"}
-  ]
-  for (const covDate in covidDates) {
-    let covidDate = covidDates[covDate].date;
-    let covidLabel = covidDates[covDate].label;
-    let id = covDate+"extra-line";
-  }
-  let covidDate = 1585267200000;
-  let covidLabel = '27th March: Lockdown Starts'
-
-  let line_coordinates = [{x: chart.x()(covidDate), y: 0}, {x: chart.x()(covidDate), y: chart.effectiveHeight()}];
-  let line = d3.line()
-    .x(function(lined) { 
-      return lined.x; 
-    }).y(function(lined) { 
-      return lined.y; 
-    });
-  let chartBody = chart.select('g');
-  let path = chartBody.selectAll('path.extra').data([line_coordinates]);
-  path = path
-        .enter()
-          .append('path')
-          .attr('class', 'extra')
-          .attr('stroke', 'red')
-          .attr('id', 'extra-line')
-          .attr("stroke-width", 1)
-          .style("stroke-dasharray", ("10,3"))
-      .merge(path);
-  path.attr('d', line);
-
-    
-          // and perhaps you'd like to label it?
-  let text = chartBody.selectAll('text.extra-label').data([0]);
-  text.enter()
-      .append('text')
-          .attr('text-anchor', 'start')
-          .attr('dy',-10)
-          .append('textPath')
-              .attr('class', 'extra-label')
-              .attr('xlink:href', '#extra-line')
-              .attr('startOffset', '0%')
-              .text(covidLabel);
-//}
-}
-
 function timeXAxis(chart){
   chart.xAxis().tickValues([1584921600000,1585526400000,1586131200000, 1586736000000, 1587340800000,1587945600000]);
   chart.xAxis().tickFormat(function(v) {
@@ -263,48 +213,6 @@ function addDatesToChart(chart) {
   }
 }
 
-function show_average_salaries(ndx) {
-  var genderDim = ndx.dimension(dc.pluck("sex"));
-  var averageSalaryByGender = genderDim.group().reduce(
-      function (p, v) {
-          p.count++;
-          p.total += v.salary;
-          return p;
-      },
-      function (p, v) {
-          p.count--;
-          if (p.count == 0) {
-              p.total = 0;
-          } else {
-              p.total -= v.salary;
-          }
-          return p;
-      },
-      function () {
-          return {count: 0, total: 0};
-      }
-  );
-
-  dc.barChart("#average-salary")
-      .width(350)
-      .height(250)
-      .margins({top: 10, right: 50, bottom: 30, left: 50})
-      .dimension(genderDim)
-      .group(averageSalaryByGender)
-      .valueAccessor(function (d) {
-          if (d.value.count == 0) {
-              return 0;
-          } else {
-              return d.value.total / d.value.count;
-          }
-      })
-      .transitionDuration(500)
-      .x(d3.scale.ordinal())
-      .xUnits(dc.units.ordinal)
-      .elasticY(true)
-      .xAxisLabel("Gender")
-      .yAxis().ticks(4);
-}
 
 let roundDown = function (num, precision) {
   num = parseFloat(num);
