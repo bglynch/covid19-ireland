@@ -14,23 +14,23 @@ d3.csv('data/COVID19 - County.csv')
   });
 
   //  https://gist.github.com/mbostock/44466fb0ff73bd630172020fc66df1dc
-  //fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv', {mode: 'cors'})
-  //.then(function(response) {
-  //  return response.ok ? response.text() : Promise.reject(response.status);
-  //})
-  //.then(function(text) {
-  //  return d3.csvParse(text);
-  //})
-  //.then(function (data) {
-  //  data.forEach(d => cleanDeathsData(d));
-  //  return data
-  //})
-  //.then(function (data) {
-  //  createDeathCharts(data);
-  //})
-  //.catch(function(error) {
-  //  console.log('Request failed', error)
-  //});
+  fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv', {mode: 'cors'})
+  .then(function(response) {
+    return response.ok ? response.text() : Promise.reject(response.status);
+  })
+  .then(function(text) {
+    return d3.csvParse(text);
+  })
+  .then(function (data) {
+    data.forEach(d => cleanDeathsData(d));
+    return data
+  })
+  .then(function (data) {
+    createDeathCharts(data);
+  })
+  .catch(function(error) {
+    console.log('Request failed', error)
+  });
 
 function modifyData(d) {
   d['NewCases'] = +d["NewCases"]
@@ -53,23 +53,37 @@ function cleanDeathsData(d){
   d.Deaths7Day = +d.Deaths7Day;
   d.ConfirmedCovidRecovered = +d.ConfirmedCovidRecovered;
   d.dd = dateFormat(d.StatisticsProfileDate.split(" ")[0]);
-  d.unixTime = unixTime(d.dd);
+  d.unixTime = +unixTime(d.dd);
   d.formattedDate = formatTime(d.dd);;
 }
 
 function createDeathCharts(date){
-  let ndx = crossfilter(date);
-  let timeDimension01 = ndx.dimension(function (data) { return data.unixTime; });
-  let timeDimension02 = ndx.dimension(function (data) { return data.unixTime; });
-  let timeDimension03 = ndx.dimension(function (data) { return data.unixTime; });
-  const newCasesGroup1 = timeDimension01.group().reduceSum(d => d['ConfirmedCovidCases']);
-  const newCasesGroup2 = timeDimension02.group().reduceSum(d => d.Cases3DayAvg);
-  const newCasesGroup3 = timeDimension03.group().reduceSum(d => d.Cases7DayAvg);
+ let day = d3.timeFormat("%A");
+  let mondays = [];
+  for(let data in date){
+    if(day(date[data].dd) == "Sunday"){
+      mondays.push(date[data].unixTime)
+    }
+  }
+  console.log(mondays)
 
-  let deathChart03 = dc.barChart('#deaths01');
+  let ndx = crossfilter(date);
+  //dimensions
+  let timeDimension01 = ndx.dimension(function (data) { return data.unixTime; });
+  let deathsDim = ndx.dimension(function (data) { return data.unixTime; });
+  // groups
+  const newCasesGroup1 = timeDimension01.group().reduceSum(d => d['ConfirmedCovidCases']);
+  const newCasesGroup2 = timeDimension01.group().reduceSum(d => d.Cases3DayAvg);
+  const newCasesGroup3 = timeDimension01.group().reduceSum(d => d.Cases7DayAvg);
+  const deathsGroup3 = timeDimension01.group().reduceSum(d => d.Deaths7Day);
+
+  let compositeDeath01 = new dc.CompositeChart("#cases-per-day-data2");
+  let compositeDeath02 = new dc.CompositeChart("#deaths-per-day2");
+
+  let deathChart03 = dc.barChart('#deaths-per-day');
   deathChart03
-    .dimension(timeDimension03)
-    .group(newCasesGroup3)
+    .dimension(deathsDim)
+    .group(deathsGroup3)
     .width($(deathChart03.anchor()).parent().width())
     .height(300)
     .x(d3.scaleBand())
@@ -79,11 +93,58 @@ function createDeathCharts(date){
     .on('postRender', function(chart) {
       addDatesToChart(chart)
     });
-    deathChart03.xAxis().tickValues([1584921600000,1585526400000,1586131200000, 1586736000000, 1587340800000,1587945600000]);
-    //deathChart03.xAxis().tickFormat(function(v) {
-    //  let date = new Date(v);
-    //  return date.toDateString().split(" 2020").join(" ").trim();
-    //})
+
+
+    compositeDeath01
+      .width($(compositeDeath01.anchor()).parent().width())
+      .height(300)
+      .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+      .renderHorizontalGridLines(true)
+      .x(d3.scaleLinear().domain(d3.extent(date, d => d.unixTime)))
+      .elasticY(true)
+      .compose([
+        new dc.LineChart(compositeDeath01)
+          .dimension(timeDimension01)
+          .colors('black')
+          .group(newCasesGroup1, "Cases per Day")
+          .dashStyle([2, 2]),
+        new dc.LineChart(compositeDeath01)
+          .dimension(timeDimension01)
+          .colors('blue')
+          .group(newCasesGroup2, "3 Day Avg.")
+          .dashStyle([4, 4]),
+        new dc.LineChart(compositeDeath01)
+          .dimension(timeDimension01)
+          .colors('green')
+          .group(newCasesGroup3, "7 Day Avg.")
+          .dashStyle([6, 6])
+      ]).on('postRender', function (chart) {
+        addDatesToChart(chart)
+      });
+
+      compositeDeath02
+      .width($(compositeDeath02.anchor()).parent().width())
+      .height(300)
+      .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+      .renderHorizontalGridLines(true)
+      .x(d3.scaleLinear().domain(d3.extent(date, d => d.unixTime)))
+      .elasticY(true)
+      .compose([
+        new dc.BarChart(compositeDeath02)
+          .dimension(deathsDim)
+          .group(deathsGroup3, "Deaths per Day")
+          .gap(1)
+          .centerBar(true)
+      ])
+      .on('postRender', function (chart) {
+        addDatesToChart(chart)
+      });
+
+
+      timeXAxis(compositeDeath01, mondays)
+      timeXAxis(compositeDeath02, mondays)
+      timeXAxis(deathChart03, mondays)
+      //timeXAxis(compositeDeath02, mondays)
 
   dc.renderAll();
 }
@@ -142,30 +203,30 @@ function createCountyCharts(peopleData) {
 
   composite01
     .width($(composite01.anchor()).parent().width())
-    .height(400)
+    .height(300)
     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
     .renderHorizontalGridLines(true)
-    .x(d3.scaleLinear().domain([1584748800000,1588464000000]))
+    .x(d3.scaleLinear().domain([1584748800000, 1588464000000]))
     .elasticY(true)
     .compose([
       new dc.LineChart(composite01)
         .dimension(dataDimension)
         .colors('black')
         .group(dateNewCasesGroup, "Cases per Day")
-        .dashStyle([2,2]),
+        .dashStyle([2, 2]),
       new dc.LineChart(composite01)
         .dimension(dataDimension)
         .colors('blue')
-        .group(date3DayCasesGroup, "2 Day Avg.")
-        .dashStyle([4,4]),
+        .group(date3DayCasesGroup, "3 Day Avg.")
+        .dashStyle([4, 4]),
       new dc.LineChart(composite01)
         .dimension(dataDimension)
         .colors('green')
         .group(date7DayCasesGroup, "7 Day Avg.")
-        .dashStyle([6,6])
-    ])    .on('postRender', function(chart) {
+        .dashStyle([6, 6])
+    ]).on('postRender', function (chart) {
       addDatesToChart(chart)
-  });
+    });
 
   barChart01
     .dimension(countyDimension)
@@ -260,6 +321,14 @@ function createCountyCharts(peopleData) {
 
 function timeXAxis(chart){
   chart.xAxis().tickValues([1584921600000,1585267200000,1585526400000,1586131200000, 1586736000000, 1587340800000,1587945600000]);
+  chart.xAxis().tickFormat(function(v) {
+    let date = new Date(v);
+    return date.toDateString().split(" 2020").join(" ").trim();
+  })
+}
+
+function timeXAxis(chart, times){
+  chart.xAxis().tickValues(times);
   chart.xAxis().tickFormat(function(v) {
     let date = new Date(v);
     return date.toDateString().split(" 2020").join(" ").trim();
