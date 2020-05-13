@@ -6,31 +6,21 @@ d3.csv('data/COVID19 - County.csv')
     data.forEach(d => modifyData(d));
     return data;
   })
-  .then(function (data) {
-    createCountyCharts(data);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  .then(function (data) { createCountyCharts(data);})
+  .catch(function (error) {console.log(error);});
 
   //  https://gist.github.com/mbostock/44466fb0ff73bd630172020fc66df1dc
   fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv', {mode: 'cors'})
   .then(function(response) {
     return response.ok ? response.text() : Promise.reject(response.status);
   })
-  .then(function(text) {
-    return d3.csvParse(text);
-  })
+  .then(function(text) {return d3.csvParse(text);})
   .then(function (data) {
     data.forEach(d => cleanDeathsData(d));
     return data
   })
-  .then(function (data) {
-    createDeathCharts(data);
-  })
-  .catch(function(error) {
-    console.log('Request failed', error)
-  });
+  .then(function (data) {createDeathCharts(data);})
+  .catch(function(error) {console.log('Request failed', error)});
 
 function modifyData(d) {
   d['NewCases'] = +d["NewCases"]
