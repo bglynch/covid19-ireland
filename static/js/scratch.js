@@ -53,7 +53,7 @@ function drawCharts(CSVdata, geojson) {
     .height(300)
     .radius(75);
 
-  var choro = dc_leaflet.choroplethChart("#mapChart")
+  dc_leaflet.choroplethChart("#mapChart")
     .dimension(postcodes)
     .group(postcodesGroup)
     .width(600)

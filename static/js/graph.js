@@ -34,11 +34,11 @@ let geoData = d3.json("data/counties.geojson")
 
 Promise.all([countiesData, casesDeathsData, geoData])
   .then(function ([countiesData, casesDeathsData, geoData]) {
-    createCountyCharts(countiesData);
-    createDeathCharts(casesDeathsData, geoData);
+    createCountyCharts(countiesData, geoData);
+    createDeathCharts(casesDeathsData);
   });
 
-function createCountyCharts(countiesData) {
+function createCountyCharts(countiesData, geoData) {
   dc.config.defaultColors(d3.schemeDark2);
 
   // ==  create the crossfilter object
@@ -46,11 +46,12 @@ function createCountyCharts(countiesData) {
 
   // ==  create dimensions
   let countyDimension = ndx.dimension(function (data) { return data.CountyName; });
+  let countyDimension4Map = ndx.dimension(function (data) { return data.CountyName; });
   let provinceDimension = ndx.dimension(function (data) { return data.Province; });
   let dataDimension = ndx.dimension(function (data) { return data.TimeStamp; });
 
   // == create groups
-  const countyNewCasesGroup = countyDimension.group().reduceSum(d => d['NewCases']);
+  const countyNewCasesGroup = countyDimension4Map.group().reduceSum(d => d['NewCases']);
   const provinceNewCasesGroup = provinceDimension.group().reduceSum(d => d['NewCases']);
   const dateNewCasesGroup = dataDimension.group().reduceSum(d => d['NewCases']);
   const date3DayCasesGroup = dataDimension.group().reduceSum(d => d['3DayAvg']);
@@ -86,6 +87,23 @@ function createCountyCharts(countiesData) {
   countiesChart = dc.rowChart('#chart01');
   provinceChart = dc.barChart('#chart02');
   countiesCasesChart = new dc.CompositeChart("#cases-per-day");
+  countiesMap = dc_leaflet.choroplethChart("#map");
+
+
+  countiesMap
+    .dimension(countyDimension4Map)
+    .group(countyNewCasesGroup)
+    .width($(countiesMap.anchor()).parent().width())
+    .height(320)
+    .center([53.42, -7]) // 53.42, -8.10
+    .zoom(6)
+    .geojson(geoData)
+    .colors(['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'])
+    .colorDomain([0,d3.extent(countyNewCasesGroup.all(), d => d.value)[1]/8])
+    .colorAccessor(function (d, i) { return d.value; })
+    .featureKeyAccessor(function (feature) {return feature.properties.COUNTY;})
+    .legend(dc_leaflet.legend().position('bottomright'))
+    ;
 
 
   ordinalBarChart(provinceChart, provinceDimension, provinceNewCasesGroup);
@@ -130,9 +148,10 @@ function createDeathCharts(casesDeathsData) {
 }
 
 function cleanCountiesData(d) {
-  d['NewCases'] = +d["NewCases"]
-  d['3DayAvg'] = +d["3DayAvg"]
-  d['7DayAvg'] = +d["7DayAvg"]
+  d['NewCases'] = +d["NewCases"];
+  d['3DayAvg'] = +d["3DayAvg"];
+  d['7DayAvg'] = +d["7DayAvg"];
+  d.CountyName = d.CountyName.toUpperCase();
   return d;
 }
 
