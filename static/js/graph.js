@@ -110,8 +110,8 @@ function createCountyCharts(countiesData, geoData) {
   createCompositeChart(countiesCasesChart, dataDimension, [dateNewCasesGroup, date3DayCasesGroup, date7DayCasesGroup]);
   createRowChart(countiesChart, countyDimension, averageSalaryByGender)
 
-  countiesChart.margins().left = 50;
-  provinceChart.margins().left = 50;
+  //ountiesChart.margins().left = 50;
+  //provinceChart.margins().top = 50;
   countiesCasesChart.margins().left = 50;
 
   timeXAxis(countiesCasesChart)
@@ -174,19 +174,28 @@ function ordinalBarChart(chart, dimension, group) {
     .dimension(dimension)
     .group(group)
     .width($(chart.anchor()).parent().width())
-    .height(300)
+    .height(330)
     .x(d3.scaleBand())
-    .xUnits(dc.units.ordinal);
+    .xUnits(dc.units.ordinal)
+    .gap(10)
+    //TO-DO modify 17000, max by 1.1
+    .y(d3.scaleLinear().domain([0, 17000]))
+    .label(function (d) {
+      return d.data.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");}
+      );
 }
 
 function createRowChart(chart, dimension, group) {
   chart
     .dimension(dimension)
     .group(group)
-    .width($(chart.anchor()).parent().width())
-    .height(300)
+    .width($(chart.anchor()).parent().width()*1.1)
+    .height(340)
     .cap(12)
     .ordering(d => -d.value.total)
+    .colors(['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'])
+    .colorDomain([0,d3.extent(group.all(), d => d.value.total)[1]/8])
+    .colorAccessor(function (d, i){return d.value.total})
     .valueAccessor(function (d) {
       if (d.value.count == 0) {
         return 0;
@@ -206,7 +215,7 @@ function createCompositeChart(chart, dimension, groups) {
     .width($(chart.anchor()).parent().width())
     .height(300)
     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
-    .renderHorizontalGridLines(true)
+    .renderHorizontalGridLines(false)
     .x(d3.scaleLinear().domain(d3.extent(groups[0].all(), d=>d.key)))
     .elasticY(true)
     .compose([

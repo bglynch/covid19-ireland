@@ -5,3 +5,18 @@ main{
 #chart01 g.row text{
     fill: #000;
 }
+#chart01 g.axis {display: none;}
+
+#chart02 g.axis.y{
+    display: none;
+}
+#chart02 .x .tick line {
+    display: none;
+}
+
+#chart02 .x path.domain {
+    display: none;
+}
+#chart02 text {
+    font-size: 0.8rem;
+}
