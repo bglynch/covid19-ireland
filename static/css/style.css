@@ -5,7 +5,12 @@ main{
 #chart01 g.row text{
     fill: #000;
 }
-#chart01 g.axis {display: none;}
+#chart01 g.axis, 
+#casesAndDeaths01 g.dc-legend, 
+#cases-per-day g.dc-legend, 
+#casesAndDeaths02 g.dc-legend  {display: none;}
+
+#chart01 g.row._12 rect {fill-opacity: .4;}
 
 #chart02 g.axis.y{
     display: none;
@@ -19,4 +24,21 @@ main{
 }
 #chart02 text {
     font-size: 0.8rem;
+}
+
+.info.legend.leaflet-control {
+    font-size: 0.7rem;
+    text-align: start;
+}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 0px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 0px;
+    }
+
+.btn-group{
+    position: absolute;
+    top: 34px;
+    right: 60px;
 }

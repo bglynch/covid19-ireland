@@ -1,23 +1,37 @@
 // data sources
-const countiesDataUrl = "data/COVID19 - County.csv"
-const countiesGeoDataUrl = "data/counties.geojson"
+const countiesDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=786105712&single=true&output=csv"
+const countiesGeoDataUrl = "data/counties-min.geojson"
 const casesDeathsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv"
+const casesStatisticsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=2036441059&single=true&output=csv"
 
 // formatting
 const dayFormat = d3.timeFormat("%A");
 const dateFormat = d3.timeParse("%Y/%m/%d");
 const formatTime = d3.timeFormat("%a %d %b");
 const unixTime = d3.timeFormat("%Q");
+const colorRange = ['#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000'];
 
 // charts
 let countiesChart;
 let countiesMap;
 let provinceChart;
-let countiesCasesChart; 
+let countiesCasesChart;
 
-let countiesData = d3.csv(countiesDataUrl)
-  .then(data => { data.forEach(d => cleanCountiesData(d)); return data })
-  .catch(function (error) { console.log(error); });
+//let countiesData = d3.csv(countiesDataUrl)
+//  .then(data => { data.forEach(d => cleanCountiesData(d)); return data })
+//  .catch(function (error) { console.log(error); });
+
+let countiesData = fetch(countiesDataUrl, { mode: 'cors' })
+  .then(function (response) {
+    return response.ok ? response.text() : Promise.reject(response.status);
+  })
+  .then(function (text) { return d3.csvParse(text); })
+  .then(function (data) {
+    data.forEach(d => cleanCountiesData(d));
+    return data
+  })
+  .catch(function (error) { console.log('Request failed', error) });
+
 
 let casesDeathsData = fetch(casesDeathsDataUrl, { mode: 'cors' })
   .then(function (response) {
@@ -30,7 +44,19 @@ let casesDeathsData = fetch(casesDeathsDataUrl, { mode: 'cors' })
   })
   .catch(function (error) { console.log('Request failed', error) });
 
-let geoData = d3.json("data/counties.geojson")
+
+let casesStatisticsData = fetch(casesStatisticsDataUrl, { mode: 'cors' })
+  .then(function (response) {
+    return response.ok ? response.text() : Promise.reject(response.status);
+  })
+  .then(function (text) { return d3.csvParse(text); })
+  .then(function (data) {
+    data.forEach(d => cleanStatsData(d));
+    return data
+  })
+  .catch(function (error) { console.log('Request failed', error) });
+
+let geoData = d3.json(countiesGeoDataUrl)
 
 Promise.all([countiesData, casesDeathsData, geoData])
   .then(function ([countiesData, casesDeathsData, geoData]) {
@@ -40,15 +66,16 @@ Promise.all([countiesData, casesDeathsData, geoData])
 
 function createCountyCharts(countiesData, geoData) {
   dc.config.defaultColors(d3.schemeDark2);
+  let mondays = getDaysFromUnixTime(countiesData, "Monday")
 
   // ==  create the crossfilter object
   let ndx = crossfilter(countiesData);
 
   // ==  create dimensions
-  let countyDimension = ndx.dimension(function (data) { return data.CountyName; });
-  let countyDimension4Map = ndx.dimension(function (data) { return data.CountyName; });
+  let countyDimension = ndx.dimension(function (data) { return data.County; });
+  let countyDimension4Map = ndx.dimension(function (data) { return data.County; });
   let provinceDimension = ndx.dimension(function (data) { return data.Province; });
-  let dataDimension = ndx.dimension(function (data) { return data.TimeStamp; });
+  let dataDimension = ndx.dimension(function (data) { return data.unixTime; });
 
   // == create groups
   const countyNewCasesGroup = countyDimension4Map.group().reduceSum(d => d['NewCases']);
@@ -98,13 +125,12 @@ function createCountyCharts(countiesData, geoData) {
     .center([53.42, -7]) // 53.42, -8.10
     .zoom(6)
     .geojson(geoData)
-    .colors(['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'])
-    .colorDomain([0,d3.extent(countyNewCasesGroup.all(), d => d.value)[1]/8])
+    .colors(colorRange)
+    .colorDomain([0, d3.extent(countyNewCasesGroup.all(), d => d.value)[1] / 8])
     .colorAccessor(function (d, i) { return d.value; })
-    .featureKeyAccessor(function (feature) {return feature.properties.COUNTY;})
+    .featureKeyAccessor(function (feature) { return feature.properties.COUNTY; })
     .legend(dc_leaflet.legend().position('bottomright'))
     ;
-
 
   ordinalBarChart(provinceChart, provinceDimension, provinceNewCasesGroup);
   createCompositeChart(countiesCasesChart, dataDimension, [dateNewCasesGroup, date3DayCasesGroup, date7DayCasesGroup]);
@@ -114,7 +140,7 @@ function createCountyCharts(countiesData, geoData) {
   //provinceChart.margins().top = 50;
   countiesCasesChart.margins().left = 50;
 
-  timeXAxis(countiesCasesChart)
+  timeXAxis(countiesCasesChart,mondays)
 
   dc.renderAll();
 };
@@ -138,8 +164,10 @@ function createDeathCharts(casesDeathsData) {
   let compositeDeath01 = new dc.CompositeChart("#casesAndDeaths01");
   let compositeDeath02 = new dc.CompositeChart("#casesAndDeaths02");
 
-  createCompositeChart(compositeDeath01, timeDimension01, [newCasesGroup1,newCasesGroup2,newCasesGroup3]) 
-  createCompositeChart(compositeDeath02, deathsDim, [deathsGroup1,deathsGroup2,deathsGroup3]) 
+  createCompositeChart(compositeDeath01, timeDimension01, [newCasesGroup1, newCasesGroup2, newCasesGroup3])
+  createCompositeChart(compositeDeath02, deathsDim, [deathsGroup1, deathsGroup2, deathsGroup3])
+  show_number_filtered(ndx)
+
 
   timeXAxis(compositeDeath01, mondays)
   timeXAxis(compositeDeath02, mondays)
@@ -151,7 +179,10 @@ function cleanCountiesData(d) {
   d['NewCases'] = +d["NewCases"];
   d['3DayAvg'] = +d["3DayAvg"];
   d['7DayAvg'] = +d["7DayAvg"];
-  d.CountyName = d.CountyName.toUpperCase();
+  d.County = d.County.toUpperCase();
+  d.dd = dateFormat(d.Date.split(" ")[0]);
+  d.unixTime = +unixTime(d.dd);
+  d.formattedDate = formatTime(d.dd);
   return d;
 }
 
@@ -163,9 +194,44 @@ function cleanCasesDeathsData(d) {
   d.Deaths3Day = +d.Deaths3Day;
   d.Deaths7Day = +d.Deaths7Day;
   d.ConfirmedCovidRecovered = +d.ConfirmedCovidRecovered;
-  d.dd = dateFormat(d.StatisticsProfileDate.split(" ")[0]);
+  d.dd = dateFormat(d.Date.split(" ")[0]);
   d.unixTime = +unixTime(d.dd);
-  d.formattedDate = formatTime(d.dd);;
+  d.formattedDate = formatTime(d.dd);
+}
+
+function cleanStatsData(d){
+  d.dd = dateFormat(d.Date.split(" ")[0]);
+  d.unixTime = +unixTime(d.dd);
+  d.formattedDate = formatTime(d.dd);
+  d.Aged5 = +d.Aged5;
+  d.Aged5to14 = +d.Aged5to14;
+  d.Aged15to24 = +d.Aged15to24;
+  d.Aged25to34 = +d.Aged25to34;
+  d.Aged35to44 = +d.Aged35to44;
+  d.Aged45to54 = +d.Aged45to54;
+  d.Aged55to64 = +d.Aged55to64;
+  d.Aged65up = +d.Aged65up;
+  d.CloseContact = +d.CloseContact;
+  d.CommunityTransmission = +d.CommunityTransmission;
+  d.ConfirmedCases = +d.ConfirmedCases;
+  d.Female = +d.Female;
+  d.HealthcareWorkersCases = +d.HealthcareWorkersCases;
+  d.HospitalisedAged5 = +d.HospitalisedAged5;
+  d.HospitalisedAged5to14 = +d.HospitalisedAged5to14;
+  d.HospitalisedAged15to24 = +d.HospitalisedAged15to24;
+  d.HospitalisedAged25to34 = +d.HospitalisedAged25to34;
+  d.HospitalisedAged35to44 = +d.HospitalisedAged35to44;
+  d.HospitalisedAged45to54 = +d.HospitalisedAged45to54;
+  d.HospitalisedAged55to64 = +d.HospitalisedAged55to64;
+  d.HospitalisedAged65up = +d.HospitalisedAged65up;
+  d.HospitalisedCases = +d.HospitalisedCases;
+  d.Male = +d.Male;
+  d.RequiringICUCases = +d.RequiringICUCases;
+  d.TravelAbroad = +d.TravelAbroad;
+  d.UnderInvestigation = +d.UnderInvestigation;
+  d.Unknown = +d.Unknown;
+  console.log(d)
+  return d;
 }
 
 // ===== chart functions
@@ -179,23 +245,24 @@ function ordinalBarChart(chart, dimension, group) {
     .xUnits(dc.units.ordinal)
     .gap(10)
     //TO-DO modify 17000, max by 1.1
-    .y(d3.scaleLinear().domain([0, 17000]))
+    .y(d3.scaleLinear().domain([0, d3.max(group.all(), d=>d.value)*1.1]))
     .label(function (d) {
-      return d.data.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");}
-      );
+      return d.data.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    );
 }
 
 function createRowChart(chart, dimension, group) {
   chart
     .dimension(dimension)
     .group(group)
-    .width($(chart.anchor()).parent().width()*1.1)
+    .width($(chart.anchor()).parent().width() * 1.1)
     .height(340)
     .cap(12)
     .ordering(d => -d.value.total)
-    .colors(['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'])
-    .colorDomain([0,d3.extent(group.all(), d => d.value.total)[1]/8])
-    .colorAccessor(function (d, i){return d.value.total})
+    .colors(colorRange)
+    .colorDomain([0, d3.extent(group.all(), d => d.value.total)[1] / 8])
+    .colorAccessor(function (d, i) { return d.value.total })
     .valueAccessor(function (d) {
       if (d.value.count == 0) {
         return 0;
@@ -204,7 +271,7 @@ function createRowChart(chart, dimension, group) {
       }
     })
     .title(function (d) {
-      if (d.value.total > 0) return d.value.total + " cases";
+      if (d.value.total > 0) return d.value.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     })
     .renderTitleLabel(true)
     .elasticX(true);
@@ -216,14 +283,15 @@ function createCompositeChart(chart, dimension, groups) {
     .height(300)
     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
     .renderHorizontalGridLines(false)
-    .x(d3.scaleLinear().domain(d3.extent(groups[0].all(), d=>d.key)))
-    .elasticY(true)
+    .x(d3.scaleLinear().domain(d3.extent(groups[0].all(), d => d.key)))
+    .elasticY(true).brushOn(true)
     .compose([
       new dc.LineChart(chart)
         .dimension(dimension)
         .colors('black')
         .group(groups[0], "Cases per Day")
-        .dashStyle([2, 2]),
+        .dashStyle([2, 2])
+        .xyTipsOn(true),
       new dc.LineChart(chart)
         .dimension(dimension)
         .colors('blue')
@@ -237,6 +305,15 @@ function createCompositeChart(chart, dimension, groups) {
     ]).on('postRender', function (thisChart) {
       addDatesToChart(thisChart)
     });
+}
+
+function show_number_filtered(ndx) {
+  let group = ndx.groupAll();
+
+  dc.dataCount('#cases-count')
+    .crossfilter(ndx)
+    .groupAll(group)
+    .transitionDuration(500);
 }
 
 // ===== chart subfunctions
@@ -298,14 +375,20 @@ let roundDown = function (num, precision) {
   return (Math.floor(num / precision) * precision).toLocaleString();
 };
 
-function getDaysFromUnixTime(data, day){
+function getDaysFromUnixTime(data, day) {
   let mondays = [];
   for (let i in data) {
     if (dayFormat(data[i].dd) == day) {
       mondays.push(data[i].unixTime)
     }
   }
-  return mondays;
+  return [...new Set(mondays)];;
+}
+
+function toggleSeriesLine(chartId,lineId){
+  document.querySelectorAll("#"+chartId+" .sub .stack path").forEach(d => d.classList.add("fadeout"))
+  document.querySelector("#"+chartId+" .sub._"+lineId+" .stack path").classList.remove("fadeout")
+
 }
 
 

@@ -52,10 +52,27 @@ dc_leaflet.leafletBase = function(Base) {
     
 
     var _tiles=function(map) {
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }).addTo(map);
     };
+    // var _tiles=function(map) {
+    //     L.tileLayer('https://tile.osm.ch/switzerland/{z}/{x}/{y}.png', {
+    //         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //     }).addTo(map);
+    // };
+
+//     var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+// 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+// 	subdomains: 'abcd',
+// 	maxZoom: 19
+// });
+
+    // var _tiles=function(map) {
+    //     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    //     }).addTo(map);
+    // };
 
     _chart.createLeaflet = function(_) {
         if(!arguments.length) {

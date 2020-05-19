@@ -10,7 +10,7 @@
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="static/libraries/dc4/dc.css" />
   <link rel="stylesheet" href="static/libraries/leaflet/leaflet.css">
-  <link rel="stylesheet" href="static/libraries/dc-leaflet/leaflet-legend.css"/>
+  <link rel="stylesheet" href="static/libraries/dc-leaflet/leaflet-legend.css" />
   <link rel="stylesheet" href="static/css/style.css">
 
   <title>DC.js Project</title>
@@ -43,7 +43,22 @@
       </div>
       <div class="col-12 mt-5 text-center">
         <p class="mb-0">Cases announced per Day</p>
-        <div id="cases-per-day" class="custom-chart"></div>
+        <div id="cases-per-day" class="custom-chart">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary active">
+              <input type="radio" name="options" id="option1" autocomplete="off"
+                onclick="toggleSeriesLine('cases-per-day','0')"> 1 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option2" autocomplete="off"
+                onclick="toggleSeriesLine('cases-per-day','1')"> 3 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option3" autocomplete="off"
+                onclick="toggleSeriesLine('cases-per-day','2')"> 7 Day
+            </label>
+          </div>
+        </div>
       </div>
       <div class="col-12 mt-5 text-center d-none">
         <p class="mb-0">Cases announced per Day</p>
@@ -63,11 +78,51 @@
     <section class="row">
       <div class="col-12 text-center mt-5">
         <p class="mb-0">Cases on a County Level</p>
-        <div id="casesAndDeaths01" class="custom-chart"></div>
+        <div class="flexer col-xs-12 col-sm-12">
+          <div id="cases-count">
+            <span class="filter-count">???</span> loans selected out of
+            <span class="total-count">???</span> loans applied for in 2018
+          </div>
+          <button button type="button" class="btn btn-info" onClick="javascript:dc.filterAll(); dc.renderAll();">
+            Reset Filters
+          </button>
+        </div>
+        <div id="casesAndDeaths01" class="custom-chart">
+          
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary active">
+              <input type="radio" name="options" id="option1" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths01','0')"> 1 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option2" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths01','1')"> 3 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option3" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths01','2')"> 7 Day
+            </label>
+          </div>
+        </div>
       </div>
       <div class="col-12 text-center mt-5">
         <p class="mb-0">Cases on a County Level</p>
-        <div id="casesAndDeaths02" class="custom-chart"></div>
+        <div id="casesAndDeaths02" class="custom-chart">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary active">
+              <input type="radio" name="options" id="option1" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths02','0')"> 1 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option2" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths02','1')"> 3 Day
+            </label>
+            <label class="btn btn-secondary">
+              <input type="radio" name="options" id="option3" autocomplete="off"
+                onclick="toggleSeriesLine('casesAndDeaths02','2')"> 7 Day
+            </label>
+          </div>
+        </div>
       </div>
     </section>
 
