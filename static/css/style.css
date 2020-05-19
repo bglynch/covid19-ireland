@@ -12,20 +12,22 @@ main{
 
 #chart01 g.row._12 rect {fill-opacity: .4;}
 
-#chart02 g.axis.y{
-    display: none;
-}
-#chart02 .x .tick line {
-    display: none;
-}
+#chart02 g.axis.y,
+#barCasesGender g.axis.y{display: none;}
 
-#chart02 .x path.domain {
-    display: none;
-}
-#chart02 text {
-    font-size: 0.8rem;
-}
+#chart02 .x .tick line,
+#barCasesGender .x .tick line {display: none;}
 
+#chart02 .x path.domain,
+#barCasesGender .x path.domain{display: none;}
+
+#chart02 text,
+#barCasesGender text {font-size: 0.8rem;}
+
+#barCasesGender rect {cursor: default;}
+#barCasesGender rect:hover {fill-opacity: 1;}
+
+/* map styling */
 .info.legend.leaflet-control {
     font-size: 0.7rem;
     text-align: start;

@@ -60,10 +60,11 @@ let casesStatisticsData = fetch(casesStatisticsDataUrl, { mode: 'cors' })
 
 let geoData = d3.json(countiesGeoDataUrl)
 
-Promise.all([countiesData, casesDeathsData, geoData])
-  .then(function ([countiesData, casesDeathsData, geoData]) {
+Promise.all([countiesData, casesDeathsData, geoData, casesStatisticsData])
+  .then(function ([countiesData, casesDeathsData, geoData, casesStatisticsData]) {
     createCountyCharts(countiesData, geoData);
     createDeathCharts(casesDeathsData);
+    createStatsCharts(casesStatisticsData);
   });
 
 function createCountyCharts(countiesData, geoData) {
@@ -141,7 +142,7 @@ function createCountyCharts(countiesData, geoData) {
   //provinceChart.margins().top = 50;
   countiesCasesChart.margins().left = 50;
 
-  timeXAxis(countiesCasesChart,mondays)
+  timeXAxis(countiesCasesChart, mondays)
 
   dc.renderAll();
 };
@@ -176,10 +177,43 @@ function createDeathCharts(casesDeathsData) {
   dc.renderAll();
 }
 
-function createStatsCharts(statsData){
+function createStatsCharts(statsData) {
   let ndx = crossfilter(statsData);
 
-  
+  let male = ndx.dimension(function (d) { return d.Male; });
+  let female = ndx.dimension(function (d) { return d.Female; });
+  let unknown = ndx.dimension(function (d) { return d.Unknown; });
+
+  let maleGroupSum = male.groupAll().reduceSum(function (d) { return d.Male; });
+  let femaleGroupSum = female.groupAll().reduceSum(function (d) { return d.Female; });
+  let unknownGroupSum = unknown.groupAll().reduceSum(function (d) { return d.Unknown; });
+
+  var bogus_dimension = {};
+  var fake_group = {
+    all: function () {
+      console.log(maleGroupSum.value())
+      console.log(femaleGroupSum.value())
+      console.log(unknownGroupSum.value())
+      return [
+        { key: 'Male', value: maleGroupSum.value() },
+        { key: 'Female', value: femaleGroupSum.value() },
+        { key: 'Unknown', value: unknownGroupSum.value() }
+      ];
+    }
+  }
+
+  // instanciate the charts
+  let genderChart = dc.barChart('#barCasesGender');
+
+
+
+  ordinalBarChart(genderChart, bogus_dimension, fake_group)
+  genderChart.height(200);
+
+  genderChart.margins().left = 50;
+  genderChart.filter = function() {};
+
+  dc.renderAll();
 }
 
 function cleanCountiesData(d) {
@@ -206,7 +240,7 @@ function cleanCasesDeathsData(d) {
   d.formattedDate = formatTime(d.dd);
 }
 
-function cleanStatsData(d){
+function cleanStatsData(d) {
   d.dd = dateFormat(d.Date.split(" ")[0]);
   d.unixTime = +unixTime(d.dd);
   d.formattedDate = formatTime(d.dd);
@@ -237,7 +271,6 @@ function cleanStatsData(d){
   d.TravelAbroad = +d.TravelAbroad;
   d.UnderInvestigation = +d.UnderInvestigation;
   d.Unknown = +d.Unknown;
-  console.log(d)
   return d;
 }
 
@@ -252,7 +285,7 @@ function ordinalBarChart(chart, dimension, group) {
     .xUnits(dc.units.ordinal)
     .gap(10)
     //TO-DO modify 17000, max by 1.1
-    .y(d3.scaleLinear().domain([0, d3.max(group.all(), d=>d.value)*1.1]))
+    .y(d3.scaleLinear().domain([0, d3.max(group.all(), d => d.value) * 1.1]))
     .label(function (d) {
       return d.data.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -323,42 +356,6 @@ function show_number_filtered(ndx) {
     .transitionDuration(500);
 }
 
-function show_percent_that_are_professors(ndx, gender, element) {
-  var percentageThatAreProf = ndx.groupAll().reduce(
-      function (p, v) {
-          if (v.sex === gender) {
-              p.count++;
-              if (v.rank === "Prof") {
-                 p.are_prof++;
-              }
-          }
-          return p;
-      },
-      function (p, v) {
-          if (v.sex === gender) {
-              p.count--;
-              if (v.rank === "Prof") {
-                 p.are_prof--;
-              }
-          }
-          return p;
-      },
-      function () {
-          return {count: 0, are_prof: 0};
-      }
-  );
-
-  dc.numberDisplay(element)
-      .formatNumber(d3.format(".2%"))
-      .valueAccessor(function (d) {
-          if (d.count == 0) {
-              return 0;
-          } else {
-              return (d.count);
-          }
-      })
-      .group(percentageThatAreProf);
-}
 
 // ===== chart subfunctions
 function addDatesToChart(chart) {
@@ -429,9 +426,9 @@ function getDaysFromUnixTime(data, day) {
   return [...new Set(mondays)];;
 }
 
-function toggleSeriesLine(chartId,lineId){
-  document.querySelectorAll("#"+chartId+" .sub .stack path").forEach(d => d.classList.add("fadeout"))
-  document.querySelector("#"+chartId+" .sub._"+lineId+" .stack path").classList.remove("fadeout")
+function toggleSeriesLine(chartId, lineId) {
+  document.querySelectorAll("#" + chartId + " .sub .stack path").forEach(d => d.classList.add("fadeout"))
+  document.querySelector("#" + chartId + " .sub._" + lineId + " .stack path").classList.remove("fadeout")
 
 }
 
