@@ -30,7 +30,7 @@ dc_leaflet.leafletBase = function(Base) {
 
     var _map;
 
-    var _mapOptions=false;
+    var _mapOptions={ zoomControl: false ,dragging:false};
     var _defaultCenter=false;
     var _defaultZoom=false;
 
@@ -54,6 +54,10 @@ dc_leaflet.leafletBase = function(Base) {
     var _tiles=function(map) {
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            zoomControl:false,
+            maxZoom:6,
+            minZoom:6,
+            
         }).addTo(map);
     };
     // var _tiles=function(map) {

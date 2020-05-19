@@ -17,6 +17,8 @@ let countiesMap;
 let provinceChart;
 let countiesCasesChart;
 
+dc.config.defaultColors(d3.schemeDark2);
+
 //let countiesData = d3.csv(countiesDataUrl)
 //  .then(data => { data.forEach(d => cleanCountiesData(d)); return data })
 //  .catch(function (error) { console.log(error); });
@@ -65,7 +67,6 @@ Promise.all([countiesData, casesDeathsData, geoData])
   });
 
 function createCountyCharts(countiesData, geoData) {
-  dc.config.defaultColors(d3.schemeDark2);
   let mondays = getDaysFromUnixTime(countiesData, "Monday")
 
   // ==  create the crossfilter object
@@ -173,6 +174,12 @@ function createDeathCharts(casesDeathsData) {
   timeXAxis(compositeDeath02, mondays)
 
   dc.renderAll();
+}
+
+function createStatsCharts(statsData){
+  let ndx = crossfilter(statsData);
+
+  
 }
 
 function cleanCountiesData(d) {
@@ -314,6 +321,43 @@ function show_number_filtered(ndx) {
     .crossfilter(ndx)
     .groupAll(group)
     .transitionDuration(500);
+}
+
+function show_percent_that_are_professors(ndx, gender, element) {
+  var percentageThatAreProf = ndx.groupAll().reduce(
+      function (p, v) {
+          if (v.sex === gender) {
+              p.count++;
+              if (v.rank === "Prof") {
+                 p.are_prof++;
+              }
+          }
+          return p;
+      },
+      function (p, v) {
+          if (v.sex === gender) {
+              p.count--;
+              if (v.rank === "Prof") {
+                 p.are_prof--;
+              }
+          }
+          return p;
+      },
+      function () {
+          return {count: 0, are_prof: 0};
+      }
+  );
+
+  dc.numberDisplay(element)
+      .formatNumber(d3.format(".2%"))
+      .valueAccessor(function (d) {
+          if (d.count == 0) {
+              return 0;
+          } else {
+              return (d.count);
+          }
+      })
+      .group(percentageThatAreProf);
 }
 
 // ===== chart subfunctions
