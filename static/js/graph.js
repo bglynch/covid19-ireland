@@ -151,20 +151,30 @@ function createDeathCharts(casesDeathsData) {
   let mondays = getDaysFromUnixTime(casesDeathsData, "Monday")
 
   let ndx = crossfilter(casesDeathsData);
+  let all = ndx.groupAll()
   //dimensions
   let timeDimension01 = ndx.dimension(function (data) { return data.unixTime; });
   let deathsDim = ndx.dimension(function (data) { return data.unixTime; });
+
   // groups
-  const newCasesGroup1 = timeDimension01.group().reduceSum(d => d['ConfirmedCovidCases']);
+  const newCasesGroup1 = timeDimension01.group().reduceSum(d => d.ConfirmedCovidCases);
   const newCasesGroup2 = timeDimension01.group().reduceSum(d => d.Cases3DayAvg);
   const newCasesGroup3 = timeDimension01.group().reduceSum(d => d.Cases7DayAvg);
   const deathsGroup1 = deathsDim.group().reduceSum(d => d.ConfirmedCovidDeaths);
   const deathsGroup2 = deathsDim.group().reduceSum(d => d.Deaths3Day);
   const deathsGroup3 = deathsDim.group().reduceSum(d => d.Deaths7Day);
 
+
   // create charts
   let compositeDeath01 = new dc.CompositeChart("#casesAndDeaths01");
   let compositeDeath02 = new dc.CompositeChart("#casesAndDeaths02");
+  let numberChartCases = dc.numberDisplay('#total-cases');
+  let numberChartDeaths = dc.numberDisplay('#total-deaths');
+
+  let dFormat = d3.format("d");
+  // charts
+  createNumberChart(numberChartCases, "ConfirmedCovidCases", ndx, dFormat)
+  createNumberChart(numberChartDeaths, "ConfirmedCovidDeaths", ndx, dFormat)
 
   createCompositeChart(compositeDeath01, timeDimension01, [newCasesGroup1, newCasesGroup2, newCasesGroup3])
   createCompositeChart(compositeDeath02, deathsDim, [deathsGroup1, deathsGroup2, deathsGroup3])
@@ -191,9 +201,6 @@ function createStatsCharts(statsData) {
   var bogus_dimension = {};
   var fake_group = {
     all: function () {
-      console.log(maleGroupSum.value())
-      console.log(femaleGroupSum.value())
-      console.log(unknownGroupSum.value())
       return [
         { key: 'Male', value: maleGroupSum.value() },
         { key: 'Female', value: femaleGroupSum.value() },
@@ -204,6 +211,15 @@ function createStatsCharts(statsData) {
 
   // instanciate the charts
   let genderChart = dc.barChart('#barCasesGender');
+  // let netCommitments = dc.numberDisplay('#total-cases');
+
+  // let dFormat = d3.format("d");
+  //   // charts
+  //   netCommitments
+  //   .formatNumber(dFormat)
+  //   .valueAccessor(function(d){ return d; })
+  //   .group(maleGroupSum)
+  //   .formatNumber(d3.format(".3s"));
 
 
 
@@ -211,7 +227,7 @@ function createStatsCharts(statsData) {
   genderChart.height(200);
 
   genderChart.margins().left = 50;
-  genderChart.filter = function() {};
+  genderChart.filter = function () { };
 
   dc.renderAll();
 }
@@ -354,6 +370,13 @@ function show_number_filtered(ndx) {
     .crossfilter(ndx)
     .groupAll(group)
     .transitionDuration(500);
+}
+
+function createNumberChart(chart, column, ndx, dFormat) {
+  chart
+    .formatNumber(dFormat)
+    .group(ndx.groupAll().reduceSum(d => d[column]))
+    .valueAccessor(d => d)
 }
 
 
