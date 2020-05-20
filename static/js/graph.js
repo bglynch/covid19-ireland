@@ -10,7 +10,7 @@ const dateFormat = d3.timeParse("%Y/%m/%d");
 const formatTime = d3.timeFormat("%a %d %b");
 const unixTime = d3.timeFormat("%Q");
 const colorRange = ['#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000'];
-
+const dFormat = d3.format(",");
 // charts
 let countiesChart;
 let countiesMap;
@@ -18,10 +18,6 @@ let provinceChart;
 let countiesCasesChart;
 
 dc.config.defaultColors(d3.schemeDark2);
-
-//let countiesData = d3.csv(countiesDataUrl)
-//  .then(data => { data.forEach(d => cleanCountiesData(d)); return data })
-//  .catch(function (error) { console.log(error); });
 
 let countiesData = fetch(countiesDataUrl, { mode: 'cors' })
   .then(function (response) {
@@ -138,8 +134,6 @@ function createCountyCharts(countiesData, geoData) {
   createCompositeChart(countiesCasesChart, dataDimension, [dateNewCasesGroup, date3DayCasesGroup, date7DayCasesGroup]);
   createRowChart(countiesChart, countyDimension, averageSalaryByGender)
 
-  //ountiesChart.margins().left = 50;
-  //provinceChart.margins().top = 50;
   countiesCasesChart.margins().left = 50;
 
   timeXAxis(countiesCasesChart, mondays)
@@ -151,7 +145,6 @@ function createDeathCharts(casesDeathsData) {
   let mondays = getDaysFromUnixTime(casesDeathsData, "Monday")
 
   let ndx = crossfilter(casesDeathsData);
-  let all = ndx.groupAll()
   //dimensions
   let timeDimension01 = ndx.dimension(function (data) { return data.unixTime; });
   let deathsDim = ndx.dimension(function (data) { return data.unixTime; });
@@ -164,22 +157,14 @@ function createDeathCharts(casesDeathsData) {
   const deathsGroup2 = deathsDim.group().reduceSum(d => d.Deaths3Day);
   const deathsGroup3 = deathsDim.group().reduceSum(d => d.Deaths7Day);
 
-
   // create charts
   let compositeDeath01 = new dc.CompositeChart("#casesAndDeaths01");
   let compositeDeath02 = new dc.CompositeChart("#casesAndDeaths02");
-  let numberChartCases = dc.numberDisplay('#total-cases');
-  let numberChartDeaths = dc.numberDisplay('#total-deaths');
 
-  let dFormat = d3.format("d");
   // charts
-  createNumberChart(numberChartCases, "ConfirmedCovidCases", ndx, dFormat)
-  createNumberChart(numberChartDeaths, "ConfirmedCovidDeaths", ndx, dFormat)
-
   createCompositeChart(compositeDeath01, timeDimension01, [newCasesGroup1, newCasesGroup2, newCasesGroup3])
   createCompositeChart(compositeDeath02, deathsDim, [deathsGroup1, deathsGroup2, deathsGroup3])
   show_number_filtered(ndx)
-
 
   timeXAxis(compositeDeath01, mondays)
   timeXAxis(compositeDeath02, mondays)
@@ -188,6 +173,7 @@ function createDeathCharts(casesDeathsData) {
 }
 
 function createStatsCharts(statsData) {
+  console.log(statsData[0])
   let ndx = crossfilter(statsData);
 
   let male = ndx.dimension(function (d) { return d.Male; });
@@ -211,15 +197,19 @@ function createStatsCharts(statsData) {
 
   // instanciate the charts
   let genderChart = dc.barChart('#barCasesGender');
-  // let netCommitments = dc.numberDisplay('#total-cases');
+  
+  let numberChartCases = dc.numberDisplay('#total-cases');
+  let numberChartDeaths = dc.numberDisplay('#total-deaths');
+  let numberChartHospital = dc.numberDisplay('#hospitalised-cases');
+  let numberChartICU = dc.numberDisplay('#icu-cases');
+  let numberChartHealthWorker = dc.numberDisplay('#health-worker-cases');
 
-  // let dFormat = d3.format("d");
-  //   // charts
-  //   netCommitments
-  //   .formatNumber(dFormat)
-  //   .valueAccessor(function(d){ return d; })
-  //   .group(maleGroupSum)
-  //   .formatNumber(d3.format(".3s"));
+  createNumberChart(numberChartCases, "CovidCases", ndx, dFormat)
+  createNumberChart(numberChartDeaths, "CovidDeaths", ndx, dFormat)
+  
+  createNumberChart(numberChartHospital, "HospitalisedCases", ndx, dFormat)
+  createNumberChart(numberChartICU, "RequiringICUCases", ndx, dFormat)
+  createNumberChart(numberChartHealthWorker, "HealthcareWorkersCases", ndx, dFormat)
 
 
 
