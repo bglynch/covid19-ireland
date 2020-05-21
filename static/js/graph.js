@@ -383,54 +383,19 @@ function createStatsCharts(statsData) {
 
   let numberChartCases = dc.numberDisplay('#total-cases');
   let numberChartDeaths = dc.numberDisplay('#total-deaths');
+  let numberChartRecovered = dc.numberDisplay('#total-recovered');
 
   let numberChartHospital = dc.numberDisplay('#hospitalised-cases');
   let numberChartICU = dc.numberDisplay('#icu-cases');
   let numberChartHealthWorker = dc.numberDisplay('#health-worker-cases');
 
-  let numberChartAge5 = dc.numberDisplay('#age_group_5');
-  let numberChartAge14 = dc.numberDisplay('#age_group_14');
-  let numberChartAge24 = dc.numberDisplay('#age_group_24');
-  let numberChartAge34 = dc.numberDisplay('#age_group_34');
-  let numberChartAge44 = dc.numberDisplay('#age_group_44');
-  let numberChartAge54 = dc.numberDisplay('#age_group_54');
-  let numberChartAge64 = dc.numberDisplay('#age_group_64');
-  let numberChartAge65 = dc.numberDisplay('#age_group_65');
-
-  let numberChartHospitalAge5 = dc.numberDisplay('#hospitalised_age_group_5');
-  let numberChartHospitalAge14 = dc.numberDisplay('#hospitalised_age_group_14');
-  let numberChartHospitalAge24 = dc.numberDisplay('#hospitalised_age_group_24');
-  let numberChartHospitalAge34 = dc.numberDisplay('#hospitalised_age_group_34');
-  let numberChartHospitalAge44 = dc.numberDisplay('#hospitalised_age_group_44');
-  let numberChartHospitalAge54 = dc.numberDisplay('#hospitalised_age_group_54');
-  let numberChartHospitalAge64 = dc.numberDisplay('#hospitalised_age_group_64');
-  let numberChartHospitalAge65 = dc.numberDisplay('#hospitalised_age_group_65');
-
-
   createNumberChart(numberChartCases, "CovidCases", ndx, dFormat)
   createNumberChart(numberChartDeaths, "CovidDeaths", ndx, dFormat)
-
+  createNumberChart(numberChartRecovered, "CovidRecovered", ndx, dFormat)
   createNumberChart(numberChartHospital, "HospitalisedCases", ndx, dFormat)
   createNumberChart(numberChartICU, "RequiringICUCases", ndx, dFormat)
   createNumberChart(numberChartHealthWorker, "HealthcareWorkersCases", ndx, dFormat)
 
-  createNumberChart(numberChartAge5, "Aged5", ndx, dFormat)
-  createNumberChart(numberChartAge14, "Aged5to14", ndx, dFormat)
-  createNumberChart(numberChartAge24, "Aged15to24", ndx, dFormat)
-  createNumberChart(numberChartAge34, "Aged25to34", ndx, dFormat)
-  createNumberChart(numberChartAge44, "Aged35to44", ndx, dFormat)
-  createNumberChart(numberChartAge54, "Aged45to54", ndx, dFormat)
-  createNumberChart(numberChartAge64, "Aged55to64", ndx, dFormat)
-  createNumberChart(numberChartAge65, "Aged65up", ndx, dFormat)
-
-  createNumberChart(numberChartHospitalAge5, "HospitalisedAged5", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge14, "HospitalisedAged5to14", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge24, "HospitalisedAged15to24", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge34, "HospitalisedAged25to34", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge44, "HospitalisedAged35to44", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge54, "HospitalisedAged45to54", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge64, "HospitalisedAged55to64", ndx, dFormat)
-  createNumberChart(numberChartHospitalAge65, "HospitalisedAged65up", ndx, dFormat)
 
   ordinalBarChart(genderChart, bogus_dimension, fake_group)
   genderChart.height(300);
@@ -497,6 +462,9 @@ function cleanStatsData(d) {
   d.TravelAbroad = +d.TravelAbroad;
   d.UnderInvestigation = +d.UnderInvestigation;
   d.Unknown = +d.Unknown;
+  d.CovidCases = +d.CovidCases;
+  d.CovidDeaths = +d.CovidDeaths;
+  d.CovidRecovered = +d.CovidRecovered;
   return d;
 }
 
