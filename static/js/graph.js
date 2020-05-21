@@ -3,7 +3,7 @@ const countiesDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvht
 const countiesGeoDataUrl = "data/counties-min.geojson"
 const casesDeathsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv"
 const casesStatisticsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=2036441059&single=true&output=csv"
-
+let allValues;
 // formatting
 const dayFormat = d3.timeFormat("%A");
 const dateFormat = d3.timeParse("%Y/%m/%d");
@@ -184,8 +184,131 @@ function createStatsCharts(statsData) {
   let femaleGroupSum = female.groupAll().reduceSum(function (d) { return d.Female; });
   let unknownGroupSum = unknown.groupAll().reduceSum(function (d) { return d.Unknown; });
 
-  var bogus_dimension = {};
-  var fake_group = {
+  allValues = ndx.groupAll().reduce(
+    function (p, v) {
+      p.count++;
+      p.CovidCases += v.CovidCases;
+      p.CovidDeaths += v.CovidDeaths;
+      p.CovidRecovered += v.CovidRecovered;
+      p.ConfirmedCases += v.ConfirmedCases;
+      p.HospitalisedCases += v.HospitalisedCases;
+      p.RequiringICUCases += v.RequiringICUCases;
+      p.HealthcareWorkersCases += v.HealthcareWorkersCases;
+      p.HospitalisedAged5 += v.HospitalisedAged5;
+      p.HospitalisedAged5to14 += v.HospitalisedAged5to14;
+      p.HospitalisedAged15to24 += v.HospitalisedAged15to24;
+      p.HospitalisedAged25to34 += v.HospitalisedAged25to34;
+      p.HospitalisedAged35to44 += v.HospitalisedAged35to44;
+      p.HospitalisedAged45to54 += v.HospitalisedAged45to54;
+      p.HospitalisedAged55to64 += v.HospitalisedAged55to64;
+      p.HospitalisedAged65up += v.HospitalisedAged65up;
+      p.Aged5 += v.Aged5;
+      p.Aged5to14 += v.Aged5to14;
+      p.Aged15to24 += v.Aged15to24;
+      p.Aged25to34 += v.Aged25to34;
+      p.Aged35to44 += v.Aged35to44;
+      p.Aged45to54 += v.Aged45to54;
+      p.Aged55to64 += v.Aged55to64;
+      p.Aged65up += v.Aged65up;
+      p.Male += v.Male;
+      p.Female += v.Female;
+      p.Unknown += v.Unknown;
+      return p;
+    },
+    function (p, v) {
+      p.count--;
+      if (p.count == 0) {
+        p.CovidCases = 0;
+        p.CovidDeaths = 0;
+        p.CovidRecovered = 0;
+        p.ConfirmedCases = 0;
+        p.HospitalisedCases = 0;
+        p.RequiringICUCases = 0;
+        p.HealthcareWorkersCases = 0;
+        p.HospitalisedAged5 = 0;
+        p.HospitalisedAged5to14 = 0;
+        p.HospitalisedAged15to24 = 0;
+        p.HospitalisedAged25to34 = 0;
+        p.HospitalisedAged35to44 = 0;
+        p.HospitalisedAged45to54 = 0;
+        p.HospitalisedAged55to64 = 0;
+        p.HospitalisedAged65up = 0;
+        p.Aged5 = 0;
+        p.Aged5to14 = 0;
+        p.Aged15to24 = 0;
+        p.Aged25to34 = 0;
+        p.Aged35to44 = 0;
+        p.Aged45to54 = 0;
+        p.Aged55to64 = 0;
+        p.Aged65up = 0;
+        p.Male = 0;
+        p.Female = 0;
+        p.Unknown = 0;
+      } else {
+        p.CovidCases -= v.CovidCases;
+        p.CovidDeaths -= v.CovidDeaths;
+        p.CovidRecovered -= v.CovidRecovered;
+        p.ConfirmedCases -= v.ConfirmedCases;
+        p.HospitalisedCases -= v.HospitalisedCases;
+        p.RequiringICUCases -= v.RequiringICUCases;
+        p.HealthcareWorkersCases -= v.HealthcareWorkersCases;
+        p.HospitalisedAged5 -= v.HospitalisedAged5;
+        p.HospitalisedAged5to14 -= v.HospitalisedAged5to14;
+        p.HospitalisedAged15to24 -= v.HospitalisedAged15to24;
+        p.HospitalisedAged25to34 -= v.HospitalisedAged25to34;
+        p.HospitalisedAged35to44 -= v.HospitalisedAged35to44;
+        p.HospitalisedAged45to54 -= v.HospitalisedAged45to54;
+        p.HospitalisedAged55to64 -= v.HospitalisedAged55to64;
+        p.HospitalisedAged65up -= v.HospitalisedAged65up;
+        p.Aged5 -= v.Aged5;
+        p.Aged5to14 -= v.Aged5to14;
+        p.Aged15to24 -= v.Aged15to24;
+        p.Aged25to34 -= v.Aged25to34;
+        p.Aged35to44 -= v.Aged35to44;
+        p.Aged45to54 -= v.Aged45to54;
+        p.Aged55to64 -= v.Aged55to64;
+        p.Aged65up -= v.Aged65up;
+        p.Male -= v.Male;
+        p.Female -= v.Female;
+        p.Unknown -= v.Unknown;
+      }
+      return p;
+    },
+    function () {
+      return {
+        count: 0,
+        CovidCases: 0,
+        CovidDeaths: 0,
+        CovidRecovered: 0,
+        ConfirmedCases: 0,
+        HospitalisedCases: 0,
+        RequiringICUCases: 0,
+        HealthcareWorkersCases: 0,
+        HospitalisedAged5: 0,
+        HospitalisedAged5to14: 0,
+        HospitalisedAged15to24: 0,
+        HospitalisedAged25to34: 0,
+        HospitalisedAged35to44: 0,
+        HospitalisedAged45to54: 0,
+        HospitalisedAged55to64: 0,
+        HospitalisedAged65up: 0,
+        Aged5: 0,
+        Aged5to14: 0,
+        Aged15to24: 0,
+        Aged25to34: 0,
+        Aged35to44: 0,
+        Aged45to54: 0,
+        Aged55to64: 0,
+        Aged65up: 0,
+        Male: 0,
+        Female: 0,
+        Unknown: 0
+      };
+    }
+  );
+
+  let bogus_dimension = {};
+  let fake_group = {
     all: function () {
       return [
         { key: 'Male', value: maleGroupSum.value() },
@@ -195,28 +318,125 @@ function createStatsCharts(statsData) {
     }
   }
 
+  let empty_dimension = {};
+  let stackedAgeGroup = {
+    all: function () {
+      return [
+        { key: "0-5",   value: allValues.value().Aged5 },
+        { key: "5-14",  value: allValues.value().Aged5to14 },
+        { key: "15-24", value: allValues.value().Aged15to24 },
+        { key: "25-34", value: allValues.value().Aged25to34 },
+        { key: "35-44", value: allValues.value().Aged35to44 },
+        { key: "45-54", value: allValues.value().Aged45to54 },
+        { key: "55-64", value: allValues.value().Aged55to64 },
+        { key: "65+",   value: allValues.value().Aged65up }
+      ];
+    }
+  }
+
+  let stackedHospitalisedAgeGroup = {
+    all: function () {
+      return [
+        { key: "0-5",   value: allValues.value().HospitalisedAged5 },
+        { key: "5-14",  value: allValues.value().HospitalisedAged5to14 },
+        { key: "15-24", value: allValues.value().HospitalisedAged15to24 },
+        { key: "25-34", value: allValues.value().HospitalisedAged25to34 },
+        { key: "35-44", value: allValues.value().HospitalisedAged35to44 },
+        { key: "45-54", value: allValues.value().HospitalisedAged45to54 },
+        { key: "55-64", value: allValues.value().HospitalisedAged55to64 },
+        { key: "65+",   value: allValues.value().HospitalisedAged65up }
+      ];
+    }
+  }
+  let ageArray = [
+    allValues.value().Aged5 + allValues.value().HospitalisedAged5,
+    allValues.value().Aged5to14 + allValues.value().HospitalisedAged5to14,
+    allValues.value().Aged15to24 + allValues.value().HospitalisedAged15to24,
+    allValues.value().Aged25to34 + allValues.value().HospitalisedAged25to34,
+    allValues.value().Aged35to44 + allValues.value().HospitalisedAged35to44,
+    allValues.value().Aged45to54 + allValues.value().HospitalisedAged45to54,
+    allValues.value().Aged55to64 + allValues.value().HospitalisedAged55to64,
+    allValues.value().Aged65up + allValues.value().HospitalisedAged65up
+  ]
+  let brainChart = dc.barChart("#stackedBarAge");
+  brainChart
+  .dimension(empty_dimension)
+  .group(stackedAgeGroup, "Non Hospitalised Cases")
+  .stack(stackedHospitalisedAgeGroup, "Hospitalised Cases")
+  .width($(brainChart.anchor()).parent().width())
+  .height(300)
+  .renderLabel(true)
+  .label(function(d) { 
+    console.log(d)
+    return d.y1 + "("+d3.format(".0%")(d.y/d.y1) +")"; 
+  })
+  .x(d3.scaleBand())
+  .xUnits(dc.units.ordinal)
+  .y(d3.scaleLinear().domain([0, d3.max(ageArray) * 1.1]))
+  .legend(dc.legend().x(30).y(30).itemHeight(15).gap(5))
+  .xAxisLabel("Cases and Hospitalisations by Age Group");
+
+  brainChart.margins().bottom = 50;
+
   // instanciate the charts
   let genderChart = dc.barChart('#barCasesGender');
-  
+
   let numberChartCases = dc.numberDisplay('#total-cases');
   let numberChartDeaths = dc.numberDisplay('#total-deaths');
+
   let numberChartHospital = dc.numberDisplay('#hospitalised-cases');
   let numberChartICU = dc.numberDisplay('#icu-cases');
   let numberChartHealthWorker = dc.numberDisplay('#health-worker-cases');
 
+  let numberChartAge5 = dc.numberDisplay('#age_group_5');
+  let numberChartAge14 = dc.numberDisplay('#age_group_14');
+  let numberChartAge24 = dc.numberDisplay('#age_group_24');
+  let numberChartAge34 = dc.numberDisplay('#age_group_34');
+  let numberChartAge44 = dc.numberDisplay('#age_group_44');
+  let numberChartAge54 = dc.numberDisplay('#age_group_54');
+  let numberChartAge64 = dc.numberDisplay('#age_group_64');
+  let numberChartAge65 = dc.numberDisplay('#age_group_65');
+
+  let numberChartHospitalAge5 = dc.numberDisplay('#hospitalised_age_group_5');
+  let numberChartHospitalAge14 = dc.numberDisplay('#hospitalised_age_group_14');
+  let numberChartHospitalAge24 = dc.numberDisplay('#hospitalised_age_group_24');
+  let numberChartHospitalAge34 = dc.numberDisplay('#hospitalised_age_group_34');
+  let numberChartHospitalAge44 = dc.numberDisplay('#hospitalised_age_group_44');
+  let numberChartHospitalAge54 = dc.numberDisplay('#hospitalised_age_group_54');
+  let numberChartHospitalAge64 = dc.numberDisplay('#hospitalised_age_group_64');
+  let numberChartHospitalAge65 = dc.numberDisplay('#hospitalised_age_group_65');
+
+
   createNumberChart(numberChartCases, "CovidCases", ndx, dFormat)
   createNumberChart(numberChartDeaths, "CovidDeaths", ndx, dFormat)
-  
+
   createNumberChart(numberChartHospital, "HospitalisedCases", ndx, dFormat)
   createNumberChart(numberChartICU, "RequiringICUCases", ndx, dFormat)
   createNumberChart(numberChartHealthWorker, "HealthcareWorkersCases", ndx, dFormat)
 
+  createNumberChart(numberChartAge5, "Aged5", ndx, dFormat)
+  createNumberChart(numberChartAge14, "Aged5to14", ndx, dFormat)
+  createNumberChart(numberChartAge24, "Aged15to24", ndx, dFormat)
+  createNumberChart(numberChartAge34, "Aged25to34", ndx, dFormat)
+  createNumberChart(numberChartAge44, "Aged35to44", ndx, dFormat)
+  createNumberChart(numberChartAge54, "Aged45to54", ndx, dFormat)
+  createNumberChart(numberChartAge64, "Aged55to64", ndx, dFormat)
+  createNumberChart(numberChartAge65, "Aged65up", ndx, dFormat)
 
+  createNumberChart(numberChartHospitalAge5, "HospitalisedAged5", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge14, "HospitalisedAged5to14", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge24, "HospitalisedAged15to24", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge34, "HospitalisedAged25to34", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge44, "HospitalisedAged35to44", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge54, "HospitalisedAged45to54", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge64, "HospitalisedAged55to64", ndx, dFormat)
+  createNumberChart(numberChartHospitalAge65, "HospitalisedAged65up", ndx, dFormat)
 
   ordinalBarChart(genderChart, bogus_dimension, fake_group)
-  genderChart.height(200);
+  genderChart.height(300);
 
   genderChart.margins().left = 50;
+  genderChart.margins().bottom = 50;
   genderChart.filter = function () { };
 
   dc.renderAll();

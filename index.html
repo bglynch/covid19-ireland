@@ -28,34 +28,97 @@
   <main class="container">
     <div class="border-top my-5"></div>
     <h1>COVID 19 in Numbers</h1>
-    <section class="row">
+    <section class="row covid-in-numbers">
 
 
-      <div class="col-2">
-					<h5 class="text-uppercase">Total Cases</h5>
+      <div class="col-12">
+        <article>
+          <h5 class="text-uppercase">Total Cases</h5>
 					<div id="total-cases"></div>
-					<h5 class="text-uppercase">Total Deaths</h5>
+        </article>
+        <article>
+          <h5 class="text-uppercase">Total Deaths</h5>
 					<div id="total-deaths"></div>
+        </article>
 			</div>
-      <div class="col-4">
+      <div class="col-12">
+        <article>
 					<h5 class="text-uppercase">Total Hospitalised Cases</h5>
-					<div id="hospitalised-cases"></div>
+          <div id="hospitalised-cases"></div>
+        </article>
+        <article>
 					<h5 class="text-uppercase">Of Which Require ICU</h5>
-					<div id="icu-cases"></div>
-					<h5 class="text-uppercase">Total Health Worker Cases</h5>
+          <div id="icu-cases"></div>
+        </article>
+        <article>
+          <h5 class="text-uppercase">Total Health Worker Cases</h5>
 					<div id="health-worker-cases"></div>
-			</div>
-      <div class="col-4">
-					<h5 class="text-uppercase">Total Cases By Age Group</h5>
-					<div id="age_group_5">0 to 5 years   : </div>
-					<div id="age_group_14">5 to 14 years : </div>
-					<div id="age_group_24">15 to 24 years: </div>
-					<div id="age_group_34">25 to 34 years: </div>
-					<div id="age_group_44">35 to 44 years: </div>
-					<div id="age_group_54">45 to 54 years: </div>
-					<div id="age_group_64">55 to 54 years: </div>
-					<div id="age_group_65">65 and up     : </div>
-			</div>
+        </article>
+      </div>
+      
+      <!-- <table class="table col-8 mt-5">
+        <thead>
+          <tr>
+            <th scope="col">Age Group</th>
+            <th scope="col">Total Cases</th>
+            <th scope="col">Hospitalised</th>
+            <th scope="col">% Hospitalised</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">0 to 5</th>
+            <td id="age_group_5"></td>
+            <td id="hospitalised_age_group_5"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">5 to 14</th>
+            <td id="age_group_14"></td>
+            <td id="hospitalised_age_group_14"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">15 to 24</th>
+            <td id="age_group_24"></td>
+            <td id="hospitalised_age_group_24"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">25 to 34</th>
+            <td id="age_group_34"></td>
+            <td id="hospitalised_age_group_34"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">35 to 44</th>
+            <td id="age_group_44"></td>
+            <td id="hospitalised_age_group_44"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">45 to 54</th>
+            <td id="age_group_54"></td>
+            <td id="hospitalised_age_group_54"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">55 to 64</th>
+            <td id="age_group_64"></td>
+            <td id="hospitalised_age_group_64"></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <th scope="row">65+</th>
+            <td id="age_group_65"></td>
+            <td id="hospitalised_age_group_65"></td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table> -->
+      <div class="col-6">
+        <div id="stackedBarAge"></div>
+      </div>
       <div class="col-3">
         <div id="barCasesGender"></div>
       </div>
@@ -63,11 +126,11 @@
         <div id="lineHospitalisedCases"></div>
       </div>
 
-
       <div id="total-hospitalisations"></div>
       <div id="total-requiredIcu"></div>
       <div id="total-healthcareWorkers"></div>
     </section>
+
     <div class="border-top my-5"></div>
     <h1>County Dataset</h1>
     <section class="row">

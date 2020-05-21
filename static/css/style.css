@@ -2,9 +2,8 @@ main{
     margin-top: 56px;
 }
 
-#chart01 g.row text{
-    fill: #000;
-}
+#chart01 g.row text{fill: #000;}
+
 #chart01 g.axis, 
 #casesAndDeaths01 g.dc-legend, 
 #cases-per-day g.dc-legend, 
@@ -13,19 +12,26 @@ main{
 #chart01 g.row._12 rect {fill-opacity: .4;}
 
 #chart02 g.axis.y,
-#barCasesGender g.axis.y{display: none;}
+#barCasesGender g.axis.y,
+#stackedBarAge g.axis.y{display: none;}
 
 #chart02 .x .tick line,
-#barCasesGender .x .tick line {display: none;}
+#barCasesGender .x .tick line,
+#stackedBarAge .x .tick line {display: none;}
 
 #chart02 .x path.domain,
-#barCasesGender .x path.domain{display: none;}
+#barCasesGender .x path.domain,
+#stackedBarAge .x path.domain{display: none;}
 
 #chart02 text,
-#barCasesGender text {font-size: 0.8rem;}
+#barCasesGender text,
+#stackedBarAge text {font-size: 0.8rem;}
 
-#barCasesGender rect {cursor: default;}
-#barCasesGender rect:hover {fill-opacity: 1;}
+#barCasesGender rect,
+#stackedBarAge rect {cursor: default;}
+
+#barCasesGender rect:hover,
+#stackedBarAge rect:hover  {fill-opacity: 1;}
 
 /* map styling */
 .info.legend.leaflet-control {
@@ -43,4 +49,25 @@ main{
     position: absolute;
     top: 34px;
     right: 60px;
+}
+
+.covid-in-numbers h5{
+    font-size: 14px;
+    margin-top: 14px;
+    margin-bottom: 0px;
+}
+.covid-in-numbers .number-display{
+    color: #3182bd;
+    font-weight: bold;
+    font-size: 24px;
+}
+.covid-in-numbers article{
+    float: left;
+    margin-right: 75px;
+    margin-bottom: 40px;
+}
+
+
+.container{
+    max-width: 1320px;
 }
