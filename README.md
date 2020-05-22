@@ -1,5 +1,5 @@
 # Ireland Covid-19 Dashboard
-For a live version of the dashboard click [**HERE**](https://bglynch.github.io/covid19-ireland/)  
+For a live version of the dashboard click [**HERE**](https://ireland-covid19.netlify.app/)  
   
   
 This dashboard displays opensource data related to the coronavirus in Ireland.  
