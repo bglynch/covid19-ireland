@@ -36,32 +36,32 @@
       <div class="col-12">
         <article>
           <h5 class="text-uppercase">Total Cases</h5>
-					<div id="total-cases"><i class="fas fa-virus"></i></div>
+          <div id="total-cases"><i class="fas fa-virus"></i></div>
         </article>
         <article>
           <h5 class="text-uppercase">Total Deaths</h5>
-					<div id="total-deaths"><i class="fas fa-book-medical"></i></div>
+          <div id="total-deaths"><i class="fas fa-book-medical"></i></div>
         </article>
         <article>
           <h5 class="text-uppercase">Total Recovered</h5>
-					<div id="total-recovered"><i class="fas fa-user-check"></i></div>
+          <div id="total-recovered"><i class="fas fa-user-check"></i></div>
         </article>
-			</div>
+      </div>
       <div class="col-12">
         <article>
-					<h5 class="text-uppercase">Total Hospitalised Cases</h5>
+          <h5 class="text-uppercase">Total Hospitalised Cases</h5>
           <div id="hospitalised-cases"><i class="fas fa-hospital"></i></div>
         </article>
         <article>
-					<h5 class="text-uppercase">Of Which Require ICU</h5>
+          <h5 class="text-uppercase">Of Which Require ICU</h5>
           <div id="icu-cases"><i class="fas fa-procedures"></i></div>
         </article>
         <article>
           <h5 class="text-uppercase">Total Health Worker Cases</h5>
-					<div id="health-worker-cases"><i class="fas fa-user-nurse"></i></div>
+          <div id="health-worker-cases"><i class="fas fa-user-nurse"></i></div>
         </article>
       </div>
-      
+
       <!-- <table class="table col-8 mt-5">
         <thead>
           <tr>
@@ -135,6 +135,82 @@
       <div id="total-hospitalisations"></div>
       <div id="total-requiredIcu"></div>
       <div id="total-healthcareWorkers"></div>
+
+      <svg height="600" style="background-color: antiquewhite;" class="col-12 timeline">
+        <!-- draw rectangles -->
+        <g transform="translate(0, 100)">
+          <rect y="30" x="0.0%"  width="7.5%"  height="40" style="fill:rgb(0,270,255)" />
+          <rect y="30" x="7.5%"  width="8.1%"  height="40" style="fill:rgb(0,240,255)" />
+          <rect y="30" x="15.6%" width="18.8%" height="40" style="fill:rgb(0,210,255)" />
+          <rect y="30" x="34.4%" width="9.1%"  height="40" style="fill:rgb(0,180,255)" />
+          <rect y="30" x="43.5%" width="11.3%" height="40" style="fill:rgb(0,150,255)" />
+          <rect y="30" x="54.8%" width="11.3%" height="40" style="fill:rgb(0,120,255)" />
+          <rect y="30" x="66.1%" width="11.3%" height="40" style="fill:rgb(0,90,255)" />
+          <rect y="30" x="77.4%" width="11.3%" height="40" style="fill:rgb(0,60,255)" />
+          <rect y="30" x="88.7%" width="11.3%" height="40" style="fill:rgb(0,30,255)" />
+        </g>
+
+        <!-- text for phase -->
+        <g transform="translate(0, 100)">
+          <text text-anchor="middle" x="3.75%"  y="60">Containment</text>
+          <text text-anchor="middle" x="11.55%" y="60">Delay</text>
+          <text text-anchor="middle" x="25%"    y="60">Stay at Home</text>
+          <text text-anchor="middle" x="38.95%" y="60">Restrictions Eased</text>
+          <text text-anchor="middle" x="49.15%" y="60">Exit Phase 1</text>
+          <text text-anchor="middle" x="60.45%" y="60">Exit Phase 2</text>
+          <text text-anchor="middle" x="71.75%" y="60">Exit Phase 3</text>
+          <text text-anchor="middle" x="83.05%" y="60">Exit Phase 4</text>
+          <text text-anchor="middle" x="94.35%" y="60">Exit Phase 5</text>
+        </g>
+
+        <!-- add dates -->
+        <g transform="translate(0, 120)">
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="6" x2="0" style="stroke:black"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start;transform: translate(0%, 0)rotate(315deg);">27th Feb</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(7.5%, 0)"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start;transform: translate(7.5%, 0)rotate(315deg);">12th March</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(15.6%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(15.6%, 0)rotate(315deg);">27th March</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(34.4%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(34.4%, 0)rotate(315deg);">1st May</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(43.5%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(43.5%, 0)rotate(315deg);">1st May</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(54.8%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(54.8%, 0)rotate(315deg);">1st May</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(66.1%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(66.1%, 0)rotate(315deg);">1st May</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(77.4%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(77.4%, 0)rotate(315deg);">1st May</text>
+          </g>
+          <g transform="translate(0,0)" style="opacity: 1;">
+            <line y2="10" x2="0" style="stroke:black;transform: translate(88.7%, 0);"></line>
+            <text class="" y="0" dy="0" style="text-anchor: start; transform: translate(88.7%, 0)rotate(315deg);">1st May</text>
+          </g>
+        </g>
+
+        <g transform="translate(0, 170)">
+          <path style="transform: translate(46.2%, 0);" d="M0 0 l5 20 l-10 0 z"></path>
+          <path style="transform: translate(46.2%, 0);" d="M0 20 l0 20 l-10 0" stroke="black" stroke-width="1" fill="none"></path>
+          <text x="-10"y="0" dy="45" style="text-anchor: end; transform: translate(46.2%, 0);">We Are Here</text>
+        </g>
+
+      </svg>
+
     </section>
 
     <div class="border-top my-5"></div>
@@ -199,7 +275,7 @@
           </button>
         </div>
         <div id="casesAndDeaths01" class="custom-chart">
-          
+
           <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-secondary active">
               <input type="radio" name="options" id="option1" autocomplete="off"

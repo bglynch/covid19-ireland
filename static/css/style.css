@@ -25,7 +25,11 @@ main{
 
 #chart02 text,
 #barCasesGender text,
-#stackedBarAge text {font-size: 0.8rem;}
+#stackedBarAge text,
+.timeline text {
+    font-size: 0.8rem;
+    font-weight: 200;
+}
 
 #barCasesGender rect,
 #stackedBarAge rect {cursor: default;}
@@ -77,4 +81,9 @@ i {
     font-size: 22px;
     margin-right: 14px;
     color: #154d75;
+}
+
+/* time line */
+svg.col-12.timeline {
+    overflow: visible;
 }

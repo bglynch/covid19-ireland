@@ -373,7 +373,9 @@ function createStatsCharts(statsData) {
   .x(d3.scaleBand())
   .xUnits(dc.units.ordinal)
   .y(d3.scaleLinear().domain([0, d3.max(ageArray) * 1.1]))
-  .legend(dc.legend().x(30).y(30).itemHeight(15).gap(5))
+  .legend(dc.legend().x(60).y(30).itemHeight(15).gap(5))
+  .barPadding(0.2)
+  .hidableStacks(true)
   .xAxisLabel("Cases and Hospitalisations by Age Group");
 
   brainChart.margins().bottom = 50;
