@@ -75,6 +75,7 @@ Promise.all([countiesData, casesDeathsData, geoData, casesStatisticsData])
     createDeathCharts(casesDeathsData);
     createStatsCharts(casesStatisticsData);
     dc.renderAll()
+    setDateOnPhaseChart();
   });
 
 function createCountyCharts(countiesData, geoData) {
@@ -609,7 +610,18 @@ function getDaysFromUnixTime(data, day) {
 function toggleSeriesLine(chartId, lineId) {
   document.querySelectorAll("#" + chartId + " .sub .stack path").forEach(d => d.classList.add("fadeout"))
   document.querySelector("#" + chartId + " .sub._" + lineId + " .stack path").classList.remove("fadeout")
+}
 
+function setDateOnPhaseChart(){
+  let svgWidth = document.getElementById("phase-chart").getBoundingClientRect().width;
+  let now = new Date();
+  let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let start = new Date(2020,01,27);
+
+  let days = Math.floor((today - start)/24/60/60/1000);
+  let translation = (days/186)*svgWidth;
+  document.getElementById("phase-location").style.transitionDuration = "3s";;
+  document.getElementById("phase-location").setAttribute("transform", "translate("+translation+", 120)");
 }
 
 

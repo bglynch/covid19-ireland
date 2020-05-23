@@ -1,6 +1,6 @@
 # Ireland Covid-19 Dashboard
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f848fbba-94a6-46ab-9eaf-070e252fd872/deploy-status)](https://app.netlify.com/sites/ireland-covid19/deploys)  
 For a live version of the dashboard click [**HERE**](https://ireland-covid19.netlify.app/)  
-  
   
 This dashboard displays opensource data related to the coronavirus in Ireland.  
 The dashbord is split into 3 sections

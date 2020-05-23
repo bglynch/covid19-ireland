@@ -138,7 +138,7 @@
 
       <svg height="200" style="background-color: none" class="col-12 timeline mt-3">
         <!-- draw rectangles -->
-        <g transform="translate(0, 50)">
+        <g transform="translate(0, 50)" id="phase-chart">
           <rect y="30" x="0.0%"  width="7.5%"  height="40" style="fill:rgb(8,48,107)" />
           <rect y="30" x="7.5%"  width="8.1%"  height="40" style="fill:rgb(8,81,156)" />
           <rect y="30" x="15.6%" width="18.8%" height="40" style="fill:rgb(33,113,181)" />
@@ -207,10 +207,10 @@
           </g>
         </g>
 
-        <g transform="translate(0, 120)">
-          <path style="transform: translate(46.2%, 0);" d="M0 0 l5 20 l-10 0 z"></path>
-          <path style="transform: translate(46.2%, 0);" d="M0 20 l0 20 l-10 0" stroke="black" stroke-width="1" fill="none"></path>
-          <text x="-10"y="0" dy="45" style="text-anchor: end; transform: translate(46.2%, 0);">We Are Here</text>
+        <g transform="translate(0, 120)" id="phase-location">
+          <path d="M0 0 l5 20 l-10 0 z"></path>
+          <path d="M0 20 l0 20 l-10 0" stroke="black" stroke-width="0.5" fill="none"></path>
+          <text x="-10"y="0" dy="45" style="text-anchor: end;">We Are Here</text>
         </g>
 
       </svg>
