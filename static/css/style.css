@@ -87,3 +87,23 @@ i {
 svg.col-12.timeline {
     overflow: visible;
 }
+
+/* footer */
+footer p {
+    float: left;
+    margin-bottom: 0;
+}
+
+footer a {
+    float: right;
+}
+
+.footer-holder {
+    min-width: 156px;
+    margin: auto;
+    padding: 14px 0px;
+}
+
+footer {
+    background-color: #cdd5de;
+}

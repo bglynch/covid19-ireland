@@ -11,11 +11,24 @@ const formatTime = d3.timeFormat("%a %d %b");
 const unixTime = d3.timeFormat("%Q");
 const colorRange = ['#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000'];
 const dFormat = d3.format(",");
-// charts
-let countiesChart;
-let countiesMap;
-let provinceChart;
-let countiesCasesChart;
+// == Create Chart Objectives
+// covid in numbers
+const number_Cases = dc.numberDisplay('#total-cases');
+const number_Deaths = dc.numberDisplay('#total-deaths');
+const number_Hospital = dc.numberDisplay('#hospitalised-cases');
+const number_Recovered = dc.numberDisplay('#total-recovered');
+const number_ICU = dc.numberDisplay('#icu-cases');
+const number_HealthWorker = dc.numberDisplay('#health-worker-cases');
+const stackBar_ageGroupCases = dc.barChart("#stackedBarAge");
+const bar_genders = dc.barChart('#barCasesGender');
+// counties
+const rowChart_counties = dc.rowChart('#chart01');
+const leaflet_counties = dc_leaflet.choroplethChart("#map");
+const bar_provinces = dc.barChart('#chart02');
+const compositeLine_counties = new dc.CompositeChart("#cases-per-day");
+// cases and deaths
+const compositeLine_cases = new dc.CompositeChart("#casesAndDeaths01");
+const compositeLine_deaths = new dc.CompositeChart("#casesAndDeaths02");
 
 dc.config.defaultColors(d3.schemeDark2);
 
@@ -61,28 +74,26 @@ Promise.all([countiesData, casesDeathsData, geoData, casesStatisticsData])
     createCountyCharts(countiesData, geoData);
     createDeathCharts(casesDeathsData);
     createStatsCharts(casesStatisticsData);
+    dc.renderAll()
   });
 
 function createCountyCharts(countiesData, geoData) {
   let mondays = getDaysFromUnixTime(countiesData, "Monday")
-
   // ==  create the crossfilter object
   let ndx = crossfilter(countiesData);
-
   // ==  create dimensions
-  let countyDimension = ndx.dimension(function (data) { return data.County; });
-  let countyDimension4Map = ndx.dimension(function (data) { return data.County; });
-  let provinceDimension = ndx.dimension(function (data) { return data.Province; });
-  let dataDimension = ndx.dimension(function (data) { return data.unixTime; });
-
+  let dim_county     = ndx.dimension(d => d.County);
+  let dim_county4Map = ndx.dimension(d => d.County);
+  let dim_province   = ndx.dimension(d => d.Province);
+  let dim_date       = ndx.dimension(d => d.unixTime);
   // == create groups
-  const countyNewCasesGroup = countyDimension4Map.group().reduceSum(d => d['NewCases']);
-  const provinceNewCasesGroup = provinceDimension.group().reduceSum(d => d['NewCases']);
-  const dateNewCasesGroup = dataDimension.group().reduceSum(d => d['NewCases']);
-  const date3DayCasesGroup = dataDimension.group().reduceSum(d => d['3DayAvg']);
-  const date7DayCasesGroup = dataDimension.group().reduceSum(d => d['7DayAvg']);
+  const grp_countySumCases = dim_county4Map.group().reduceSum(d => d['NewCases']);
+  const grp_provincesSumCases = dim_province.group().reduceSum(d => d['NewCases']);
+  const grp_dateSumCases = dim_date.group().reduceSum(d => d['NewCases']);
+  const grp_dateSumCases3Day = dim_date.group().reduceSum(d => d['3DayAvg']);
+  const grp_dateSumCases7Day = dim_date.group().reduceSum(d => d['7DayAvg']);
 
-  let averageSalaryByGender = countyDimension.group().reduce(
+  let averageSalaryByGender = dim_county.group().reduce(
     function (p, v) {
       p.count++;
       p.total += v["NewCases"];
@@ -108,37 +119,29 @@ function createCountyCharts(countiesData, geoData) {
     }
   );
 
-  // instanciate the charts
-  countiesChart = dc.rowChart('#chart01');
-  provinceChart = dc.barChart('#chart02');
-  countiesCasesChart = new dc.CompositeChart("#cases-per-day");
-  countiesMap = dc_leaflet.choroplethChart("#map");
-
-
-  countiesMap
-    .dimension(countyDimension4Map)
-    .group(countyNewCasesGroup)
-    .width($(countiesMap.anchor()).parent().width())
+  leaflet_counties
+    .dimension(dim_county4Map)
+    .group(grp_countySumCases)
+    .width($(leaflet_counties.anchor()).parent().width())
     .height(320)
-    .center([53.42, -7]) // 53.42, -8.10
+    .center([53.42, -7])
     .zoom(6)
     .geojson(geoData)
     .colors(colorRange)
-    .colorDomain([0, d3.extent(countyNewCasesGroup.all(), d => d.value)[1] / 8])
-    .colorAccessor(function (d, i) { return d.value; })
-    .featureKeyAccessor(function (feature) { return feature.properties.COUNTY; })
+    .colorDomain([0, d3.extent(grp_countySumCases.all(), d => d.value)[1] / 8])
+    .colorAccessor(d => d.value)
+    .featureKeyAccessor(feature => feature.properties.COUNTY)
     .legend(dc_leaflet.legend().position('bottomright'))
     ;
 
-  ordinalBarChart(provinceChart, provinceDimension, provinceNewCasesGroup);
-  createCompositeChart(countiesCasesChart, dataDimension, [dateNewCasesGroup, date3DayCasesGroup, date7DayCasesGroup]);
-  createRowChart(countiesChart, countyDimension, averageSalaryByGender)
+  ordinalBarChart(bar_provinces, dim_province, grp_provincesSumCases);
+  createCompositeChart(compositeLine_counties, dim_date, [grp_dateSumCases, grp_dateSumCases3Day, grp_dateSumCases7Day]);
+  createRowChart(rowChart_counties, dim_county, averageSalaryByGender)
 
-  countiesCasesChart.margins().left = 50;
+  compositeLine_counties.margins().left = 50;
 
-  timeXAxis(countiesCasesChart, mondays)
+  timeXAxis(compositeLine_counties, mondays)
 
-  dc.renderAll();
 };
 
 function createDeathCharts(casesDeathsData) {
@@ -146,43 +149,35 @@ function createDeathCharts(casesDeathsData) {
 
   let ndx = crossfilter(casesDeathsData);
   //dimensions
-  let timeDimension01 = ndx.dimension(function (data) { return data.unixTime; });
-  let deathsDim = ndx.dimension(function (data) { return data.unixTime; });
-
+  let dim_date1 = ndx.dimension(d => d.unixTime);
+  let dim_date2 = ndx.dimension(d => d.unixTime);
   // groups
-  const newCasesGroup1 = timeDimension01.group().reduceSum(d => d.ConfirmedCovidCases);
-  const newCasesGroup2 = timeDimension01.group().reduceSum(d => d.Cases3DayAvg);
-  const newCasesGroup3 = timeDimension01.group().reduceSum(d => d.Cases7DayAvg);
-  const deathsGroup1 = deathsDim.group().reduceSum(d => d.ConfirmedCovidDeaths);
-  const deathsGroup2 = deathsDim.group().reduceSum(d => d.Deaths3Day);
-  const deathsGroup3 = deathsDim.group().reduceSum(d => d.Deaths7Day);
-
-  // create charts
-  let compositeDeath01 = new dc.CompositeChart("#casesAndDeaths01");
-  let compositeDeath02 = new dc.CompositeChart("#casesAndDeaths02");
+  const grp_cases1Day = dim_date1.group().reduceSum(d => d.ConfirmedCovidCases);
+  const grp_cases3Day = dim_date1.group().reduceSum(d => d.Cases3DayAvg);
+  const grp_cases7Day = dim_date1.group().reduceSum(d => d.Cases7DayAvg);
+  const grp_deaths1Day   = dim_date2.group().reduceSum(d => d.ConfirmedCovidDeaths);
+  const grp_deaths3Day   = dim_date2.group().reduceSum(d => d.Deaths3Day);
+  const grp_deaths7Day   = dim_date2.group().reduceSum(d => d.Deaths7Day);
 
   // charts
-  createCompositeChart(compositeDeath01, timeDimension01, [newCasesGroup1, newCasesGroup2, newCasesGroup3])
-  createCompositeChart(compositeDeath02, deathsDim, [deathsGroup1, deathsGroup2, deathsGroup3])
+  createCompositeChart(compositeLine_cases,  dim_date1, [grp_cases1Day, grp_cases3Day, grp_cases7Day])
+  createCompositeChart(compositeLine_deaths, dim_date2, [grp_deaths1Day, grp_deaths3Day, grp_deaths7Day])
   show_number_filtered(ndx)
 
-  timeXAxis(compositeDeath01, mondays)
-  timeXAxis(compositeDeath02, mondays)
-
-  dc.renderAll();
+  timeXAxis(compositeLine_cases, mondays)
+  timeXAxis(compositeLine_deaths, mondays)
 }
 
 function createStatsCharts(statsData) {
-  console.log(statsData[0])
   let ndx = crossfilter(statsData);
 
-  let male = ndx.dimension(function (d) { return d.Male; });
-  let female = ndx.dimension(function (d) { return d.Female; });
-  let unknown = ndx.dimension(function (d) { return d.Unknown; });
+  let dim_male    = ndx.dimension(d => d.Male );
+  let dim_female  = ndx.dimension(d => d.Female );
+  let dim_unknown = ndx.dimension(d => d.Unknown );
 
-  let maleGroupSum = male.groupAll().reduceSum(function (d) { return d.Male; });
-  let femaleGroupSum = female.groupAll().reduceSum(function (d) { return d.Female; });
-  let unknownGroupSum = unknown.groupAll().reduceSum(function (d) { return d.Unknown; });
+  let grp_maleSum    = dim_male.groupAll().reduceSum(d => d.Male);
+  let grp_femaleSum  = dim_female.groupAll().reduceSum(d => d.Female);
+  let grp_unknownSum = dim_unknown.groupAll().reduceSum(d => d.Unknown);
 
   allValues = ndx.groupAll().reduce(
     function (p, v) {
@@ -311,15 +306,14 @@ function createStatsCharts(statsData) {
   let fake_group = {
     all: function () {
       return [
-        { key: 'Male', value: maleGroupSum.value() },
-        { key: 'Female', value: femaleGroupSum.value() },
-        { key: 'Unknown', value: unknownGroupSum.value() }
+        { key: 'Male', value: grp_maleSum.value() },
+        { key: 'Female', value: grp_femaleSum.value() },
+        { key: 'Unknown', value: grp_unknownSum.value() }
       ];
     }
   }
 
-  let empty_dimension = {};
-  let stackedAgeGroup = {
+  let grp_ageCases = {
     all: function () {
       return [
         { key: "0-5",   value: allValues.value().Aged5 },
@@ -334,7 +328,7 @@ function createStatsCharts(statsData) {
     }
   }
 
-  let stackedHospitalisedAgeGroup = {
+  let grp_ageHospitalised = {
     all: function () {
       return [
         { key: "0-5",   value: allValues.value().HospitalisedAged5 },
@@ -358,55 +352,38 @@ function createStatsCharts(statsData) {
     allValues.value().Aged55to64 + allValues.value().HospitalisedAged55to64,
     allValues.value().Aged65up + allValues.value().HospitalisedAged65up
   ]
-  let brainChart = dc.barChart("#stackedBarAge");
-  brainChart
-  .dimension(empty_dimension)
-  .group(stackedAgeGroup, "Non Hospitalised Cases")
-  .stack(stackedHospitalisedAgeGroup, "Hospitalised Cases")
-  .width($(brainChart.anchor()).parent().width())
-  .height(300)
-  .renderLabel(true)
-  .label(function(d) { 
-    console.log(d)
-    return d.y1 + "("+d3.format(".0%")(d.y/d.y1) +")"; 
-  })
-  .x(d3.scaleBand())
-  .xUnits(dc.units.ordinal)
-  .y(d3.scaleLinear().domain([0, d3.max(ageArray) * 1.1]))
-  .legend(dc.legend().x(60).y(30).itemHeight(15).gap(5))
-  .barPadding(0.2)
-  .hidableStacks(true)
-  .xAxisLabel("Cases and Hospitalisations by Age Group");
+  
+  stackBar_ageGroupCases
+    .dimension(bogus_dimension)
+    .group(grp_ageCases, "Non Hospitalised Cases")
+    .stack(grp_ageHospitalised, "Hospitalised Cases")
+    .width($(stackBar_ageGroupCases.anchor()).parent().width())
+    .height(300)
+    .renderLabel(true)
+    .label(d => d.y1 + "("+d3.format(".0%")(d.y/d.y1) +")")
+    .x(d3.scaleBand())
+    .xUnits(dc.units.ordinal)
+    .y(d3.scaleLinear().domain([0, d3.max(ageArray) * 1.1]))
+    .legend(dc.legend().x(60).y(30).itemHeight(15).gap(5))
+    .barPadding(0.2)
+    .hidableStacks(true)
+    .ordinalColors(['#4292c6','#07306b'])
+    .xAxisLabel("Cases and Hospitalisations by Age Group");
 
-  brainChart.margins().bottom = 50;
+    
+    createnumber_(number_Cases, "CovidCases", ndx, dFormat)
+    createnumber_(number_Deaths, "CovidDeaths", ndx, dFormat)
+    createnumber_(number_Recovered, "CovidRecovered", ndx, dFormat)
+    createnumber_(number_Hospital, "HospitalisedCases", ndx, dFormat)
+    createnumber_(number_ICU, "RequiringICUCases", ndx, dFormat)
+    createnumber_(number_HealthWorker, "HealthcareWorkersCases", ndx, dFormat)
+    ordinalBarChart(bar_genders, bogus_dimension, fake_group)
+    
+    stackBar_ageGroupCases.margins().bottom = 50;
+    bar_genders.height(300);
+    bar_genders.margins().bottom = 50;
+    bar_genders.filter = function () { };
 
-  // instanciate the charts
-  let genderChart = dc.barChart('#barCasesGender');
-
-  let numberChartCases = dc.numberDisplay('#total-cases');
-  let numberChartDeaths = dc.numberDisplay('#total-deaths');
-  let numberChartRecovered = dc.numberDisplay('#total-recovered');
-
-  let numberChartHospital = dc.numberDisplay('#hospitalised-cases');
-  let numberChartICU = dc.numberDisplay('#icu-cases');
-  let numberChartHealthWorker = dc.numberDisplay('#health-worker-cases');
-
-  createNumberChart(numberChartCases, "CovidCases", ndx, dFormat)
-  createNumberChart(numberChartDeaths, "CovidDeaths", ndx, dFormat)
-  createNumberChart(numberChartRecovered, "CovidRecovered", ndx, dFormat)
-  createNumberChart(numberChartHospital, "HospitalisedCases", ndx, dFormat)
-  createNumberChart(numberChartICU, "RequiringICUCases", ndx, dFormat)
-  createNumberChart(numberChartHealthWorker, "HealthcareWorkersCases", ndx, dFormat)
-
-
-  ordinalBarChart(genderChart, bogus_dimension, fake_group)
-  genderChart.height(300);
-
-  genderChart.margins().left = 50;
-  genderChart.margins().bottom = 50;
-  genderChart.filter = function () { };
-
-  dc.renderAll();
 }
 
 function cleanCountiesData(d) {
@@ -552,7 +529,7 @@ function show_number_filtered(ndx) {
     .transitionDuration(500);
 }
 
-function createNumberChart(chart, column, ndx, dFormat) {
+function createnumber_(chart, column, ndx, dFormat) {
   chart
     .formatNumber(dFormat)
     .group(ndx.groupAll().reduceSum(d => d[column]))
