@@ -360,7 +360,7 @@ function createStatsCharts(statsData) {
     .group(grp_ageCases, "Non Hospitalised Cases")
     .stack(grp_ageHospitalised, "Hospitalised Cases")
     .width($(stackBar_ageGroupCases.anchor()).parent().width())
-    .height(300)
+    .height(330)
     .renderLabel(true)
     .label(d => d.y1 + "("+d3.format(".0%")(d.y/d.y1) +")")
     .x(d3.scaleBand())
@@ -381,10 +381,12 @@ function createStatsCharts(statsData) {
     createnumber_(number_HealthWorker, "HealthcareWorkersCases", ndx, dFormat)
     ordinalBarChart(bar_genders, bogus_dimension, fake_group)
     
-    stackBar_ageGroupCases.margins().bottom = 50;
-    bar_genders.height(300);
+    stackBar_ageGroupCases.margins().bottom = 65;
+    // bar_genders.height(300);
     bar_genders.margins().bottom = 50;
     bar_genders.filter = function () { };
+    bar_genders.xAxisLabel("Cases by Gender");
+    bar_genders.barPadding(0.2);
 
 }
 
