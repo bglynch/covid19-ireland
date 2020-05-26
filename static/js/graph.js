@@ -74,6 +74,7 @@ Promise.all([countiesData, casesDeathsData, geoData, casesStatisticsData])
     createCountyCharts(countiesData, geoData);
     createDeathCharts(casesDeathsData);
     createStatsCharts(casesStatisticsData);
+    removingLoading()
     dc.renderAll()
     setDateOnPhaseChart();
   });
@@ -622,6 +623,11 @@ function setDateOnPhaseChart(){
   let translation = (days/186)*svgWidth;
   document.getElementById("phase-location").style.transitionDuration = "3s";;
   document.getElementById("phase-location").setAttribute("transform", "translate("+translation+", 120)");
+}
+
+function removingLoading(){
+  document.querySelector(".loading-cover").remove();
+  document.querySelector(".loading").classList.remove("loading");
 }
 
 

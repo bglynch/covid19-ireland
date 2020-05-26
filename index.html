@@ -18,7 +18,7 @@
   <title>DC.js Project</title>
 </head>
 
-<body>
+<body class="loading">
   <nav class="navbar fixed-top navbar-dark bg-dark">
     <div class="container">
       <div class="flexer navbar-header">
@@ -27,12 +27,18 @@
       </div>
     </div>
   </nav>
+
+<div class="loading-cover">
+    <div class="spinner-border text-primary" role="status" style="/* margin-left: 46%; */margin-top: 23%;">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <h2>Loading Data...</h2>
+</div>
+
   <main class="container">
     <div class="border-top my-5"></div>
     <h1>COVID 19 in Numbers</h1>
     <section class="row covid-in-numbers">
-
-
       <div class="col-12">
         <article>
           <h5 class="text-uppercase">Total Cases</h5>
