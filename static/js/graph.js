@@ -382,7 +382,6 @@ function createStatsCharts(statsData) {
     ordinalBarChart(bar_genders, bogus_dimension, fake_group)
     
     stackBar_ageGroupCases.margins().bottom = 65;
-    // bar_genders.height(300);
     bar_genders.margins().bottom = 50;
     bar_genders.filter = function () { };
     bar_genders.xAxisLabel("Cases by Gender");
@@ -548,9 +547,10 @@ function addDatesToChart(chart) {
   if (chart == "BarChart") offset = 10;
 
   let covidDates = [
-    //{date:1583971200000, label:"Delay Phase"},    // 12th March
-    { date: 1585267200000, label: "Stay Home Phase" },  // 27th March
-    { date: 1588291200000, label: "Ease Restrictions" } // 01st May
+    //{date:1583971200000, label:"Delay Phase"},          // 12th March
+    { date: 1585267200000, label: "Stay Home Phase" },    // 27th March
+    { date: 1588291200000, label: "Ease Restrictions" },  // 01st May
+    { date: 1589760000000, label: "Phase 01" }            // 18th May
   ]
 
   for (const covDate in covidDates) {
