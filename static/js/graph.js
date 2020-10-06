@@ -1,8 +1,11 @@
 // data sources
-const countiesDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=786105712&single=true&output=csv"
+// const countiesDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=786105712&single=true&output=csv"
+// const casesDeathsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv"
+// const casesStatisticsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=2036441059&single=true&output=csv"
+const countiesDataUrl = "data/test/COVID19 - County.csv"
+const casesDeathsDataUrl = "data/test/COVID19 - CasesAndDeaths.csv"
+const casesStatisticsDataUrl = "data/test/COVID19 - Statistics.csv"
 const countiesGeoDataUrl = "data/counties-min.geojson"
-const casesDeathsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=247770862&single=true&output=csv"
-const casesStatisticsDataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgkvhtziA93AnQaiE6eMmf_iujke82_gBtv6_Ixs5XIzZ-dc4rgXug2Ll8P3N56PqyHz5ECvfxBDW_/pub?gid=2036441059&single=true&output=csv"
 let allValues;
 // formatting
 const dayFormat = d3.timeFormat("%A");
@@ -618,7 +621,10 @@ function toggleSeriesLine(chartId, lineId) {
 function setDateOnPhaseChart(){
   let svgWidth = document.getElementById("phase-chart").getBoundingClientRect().width;
   let now = new Date();
-  let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // commented out to change to date to be fixed to 25/7/20
+  // let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let today = new Date(2020,06,25);
   let start = new Date(2020,01,27);
 
   let days = Math.floor((today - start)/24/60/60/1000);
